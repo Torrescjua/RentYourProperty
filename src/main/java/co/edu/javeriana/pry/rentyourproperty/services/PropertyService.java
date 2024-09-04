@@ -41,20 +41,6 @@ public List<PropertyDTO> getPropertiesByMunicipality(String municipality) {
                      .map(property -> modelMapper.map(property, PropertyDTO.class))
                      .collect(Collectors.toList());
 }
-    // Método de creación (crea una propiedad y devuelve la entidad Property)
-    public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
-        User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
-        
-        if (!owner.getRole().equals(Role.ARRENDADOR)) {
-            throw new IllegalArgumentException("Only users with the ARRENDADOR role can be property owners.");
-        }
-
-        Property property = modelMapper.map(propertyDTO, Property.class);
-        property.setOwner(owner);
-        propertyRepository.save(property);
-        return modelMapper.map(property, PropertyDTO.class);
-    }
 
 public List<PropertyDTO> getPropertiesByName(String name) {
     List<Property> properties = propertyRepository.findByNameIgnoreCase(name);
@@ -85,6 +71,11 @@ public List<PropertyDTO> getPropertiesByCapacity(int people) {
      public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
           User owner = userRepository.findById(ownerId)
             .orElseThrow(() -> new ResourceNotFoundException("Owner not found with id " + ownerId));
+
+            if (!owner.getRole().equals(Role.ARRENDADOR)) {
+                throw new IllegalArgumentException("Only users with the ARRENDADOR role can be property owners.");
+            }
+
          Property property = modelMapper.map(propertyDTO, Property.class);
           property.setOwner(owner);
           property.setStatus(Status.ACTIVE); // Inicialmente activo
