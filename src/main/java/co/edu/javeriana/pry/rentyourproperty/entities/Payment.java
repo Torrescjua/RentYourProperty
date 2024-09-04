@@ -23,8 +23,10 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal amount;
-    private LocalDate paymentDate;
+    private double amount;
+    private String bank;
+    private String accountNumber;
+
 
     @OneToOne
     @JoinColumn(name = "rental_request_id")
