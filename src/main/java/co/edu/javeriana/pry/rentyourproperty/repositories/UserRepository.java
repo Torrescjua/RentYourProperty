@@ -10,4 +10,5 @@ import co.edu.javeriana.pry.rentyourproperty.entities.User;
 @Repository
 public interface UserRepository extends CrudRepository<User, Long>{
     Optional<User> findByActivationToken(String activationToken);
+    Optional<User> findByEmail(String email);
 }
