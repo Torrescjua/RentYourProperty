@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.javeriana.pry.rentyourproperty.dtos.RentalRequestDTO;
 import co.edu.javeriana.pry.rentyourproperty.dtos.UserDTO;
 import co.edu.javeriana.pry.rentyourproperty.services.UserService;
 import jakarta.validation.Valid;
@@ -71,25 +70,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         
     }
-     // Get rental requests by user ID
-    @GetMapping(value = "/users/{userId}/rental-requests", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RentalRequestDTO> getRentalRequestsByUserId(@PathVariable Long userId) {
-        return userService.getRentalRequests(userId);
-    }
 
-    // Get rental requests by UserDTO
-    @PostMapping(value = "/users/rental-requests", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RentalRequestDTO> getRentalRequestsByUserDTO(@RequestBody UserDTO userDTO) {
-        return userService.getRentalRequests(userDTO);
-    }
-
-    // Accept or reject a rental request
-    @PostMapping(value = "/rental-requests/{requestId}/decision", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RentalRequestDTO acceptOrRejectRentalRequest(
-            @PathVariable Long requestId,
-            @RequestParam boolean isAccepted,
-            @RequestBody UserDTO userDTO) {
-        return userService.acceptOrRejectRequest(requestId, isAccepted, userDTO);
-    }
 }
 

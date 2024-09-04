@@ -27,8 +27,10 @@ public class AccountActivationService {
 
         userRepository.save(user);
 
-        String activationLink = "http://localhost:8080/api/activation/activate?token=" + token;
-        String message = "Por favor, activa tu cuenta utilizando el siguiente enlace: " + activationLink;
+        String activationLink = 
+        "http://localhost:8080/api/activation/activate?token=" + token;
+        String message = 
+        "Por favor, activa tu cuenta utilizando el siguiente enlace: " + activationLink;
 
         emailService.sendSimpleMessage(user.getEmail(), "Activación de cuenta", message);
     }

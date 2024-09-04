@@ -7,15 +7,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import co.edu.javeriana.pry.rentyourproperty.dtos.RentalRequestDTO;
+
 import co.edu.javeriana.pry.rentyourproperty.dtos.UserDTO;
-import co.edu.javeriana.pry.rentyourproperty.entities.RentalRequest;
-import co.edu.javeriana.pry.rentyourproperty.entities.RequestStatus;
+import co.edu.javeriana.pry.rentyourproperty.entities.Role;
 import co.edu.javeriana.pry.rentyourproperty.entities.Status;
 import co.edu.javeriana.pry.rentyourproperty.entities.User;
 import co.edu.javeriana.pry.rentyourproperty.exceptions.ResourceNotFoundException;
-import co.edu.javeriana.pry.rentyourproperty.exceptions.UnauthorizedException;
-import co.edu.javeriana.pry.rentyourproperty.repositories.RentalRequestRepository;
 import co.edu.javeriana.pry.rentyourproperty.repositories.UserRepository;
 
 @Service
@@ -25,14 +22,10 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private RentalRequestRepository rentalRequestRepository;
-
-
-    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    private AccountActivationService activationService;
+    private AccountActivationService accountActivationService;
 
     // Método GET para todos los usuarios
     public List<UserDTO> get() {
@@ -57,7 +50,7 @@ public class UserService {
         user = userRepository.save(user);
 
         // Enviar correo de activación
-        activationService.sendActivationEmail(user);
+        accountActivationService.sendActivationEmail(user);
         
         return modelMapper.map(user, UserDTO.class);
     }
@@ -85,59 +78,6 @@ public class UserService {
         userRepository.save(user);
     }
     
-    public List<RentalRequestDTO> getRentalRequests(Long userId) {
-        userRepository.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        List<RentalRequest> rentalRequests = (List<RentalRequest>) rentalRequestRepository.findAll();
-        List<RentalRequestDTO> rentalRequestDTOs = rentalRequests.stream()
-                            .filter(rentalRequest -> rentalRequest.getUser().getId().equals(userId))
-                            .map(rentalRequest -> modelMapper.map(rentalRequest, RentalRequestDTO.class))
-                            .collect(Collectors.toList());
-        
-        return rentalRequestDTOs;
-    }
-
-
-    public List<RentalRequestDTO> getRentalRequests(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        Long userId = user.getId();
-
-        userRepository.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        List<RentalRequest> rentalRequests = (List<RentalRequest>) rentalRequestRepository.findAll();
-        List<RentalRequestDTO> rentalRequestDTOs = rentalRequests.stream()
-                            .filter(rentalRequest -> rentalRequest.getUser().getId().equals(userId))
-                            .map(rentalRequest -> modelMapper.map(rentalRequest, RentalRequestDTO.class))
-                            .collect(Collectors.toList());
-        
-        return rentalRequestDTOs;
-    }
-    
-
-    public RentalRequestDTO acceptOrRejectRequest(Long requestId, boolean isAccepted, UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        Long userId = user.getId();
-
-        userRepository.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        RentalRequest rentalRequest = rentalRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Rental request not found"));
-    
-        // Verify that the user has the authority to accept or reject the request
-        if (!rentalRequest.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("User is not authorized to accept or reject this rental request");
-        }
-    
-        // Update the request status
-        rentalRequest.setRequestStatus(isAccepted ? RequestStatus.ACCEPTED : RequestStatus.REJECTED);
-        rentalRequest = rentalRequestRepository.save(rentalRequest);
-    
-        return modelMapper.map(rentalRequest, RentalRequestDTO.class);
-    }
-
     // Log in
     public UserDTO logIn(String email, String password) {
         // Check if a user with the provided email exists
@@ -153,4 +93,17 @@ public class UserService {
         return modelMapper.map(user, UserDTO.class);
     }
 
+    // Check if user is ARRENDADOR (landlord)
+    public boolean isUserLandlord(Long userId) {
+        return userRepository.findById(userId)
+            .map(user -> Role.ARRENDADOR.equals(user.getRole()))
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+   
+    // Check if the user is active
+    public boolean isUserActive(Long userId) {
+        return userRepository.findById(userId)
+            .map(user -> Status.ACTIVE.equals(user.getStatus()))
+            .orElse(false);
+    }
 }

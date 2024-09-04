@@ -25,27 +25,27 @@ public class PropertyController {
     private PropertyService propertyService;
 
     @GetMapping("/municipality/{municipality}")
-public ResponseEntity<List<PropertyDTO>> getPropertiesByMunicipality(@PathVariable String municipality) {
-    List<PropertyDTO> properties = propertyService.getPropertiesByMunicipality(municipality);
-    return ResponseEntity.ok(properties);
-}
+    public ResponseEntity<List<PropertyDTO>> getPropertiesByMunicipality(@PathVariable String municipality) {
+        List<PropertyDTO> properties = propertyService.getPropertiesByMunicipality(municipality);
+        return ResponseEntity.ok(properties);
+    }
 
-@GetMapping("/name/{name}")
-public ResponseEntity<List<PropertyDTO>> getPropertiesByName(@PathVariable String name) {
-    List<PropertyDTO> properties = propertyService.getPropertiesByName(name);
-    return ResponseEntity.ok(properties);
-}
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<PropertyDTO>> getPropertiesByName(@PathVariable String name) {
+        List<PropertyDTO> properties = propertyService.getPropertiesByName(name);
+        return ResponseEntity.ok(properties);
+    }
 
-@GetMapping("/capacity/{people}")
-public ResponseEntity<List<PropertyDTO>> getPropertiesByCapacity(@PathVariable int people) {
-    List<PropertyDTO> properties = propertyService.getPropertiesByCapacity(people);
-    return ResponseEntity.ok(properties);
-}
+    @GetMapping("/capacity/{people}")
+    public ResponseEntity<List<PropertyDTO>> getPropertiesByCapacity(@PathVariable int people) {
+        List<PropertyDTO> properties = propertyService.getPropertiesByCapacity(people);
+        return ResponseEntity.ok(properties);
+    }
 
     @PostMapping(value ="/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PropertyDTO> createProperty(@RequestBody PropertyDTO propertyDTO, @RequestParam Long ownerId) {
-    PropertyDTO createdProperty = propertyService.createProperty(propertyDTO, ownerId);
-    return ResponseEntity.ok(createdProperty);
+        PropertyDTO createdProperty = propertyService.createProperty(propertyDTO, ownerId);
+        return ResponseEntity.ok(createdProperty);
     }
 
     
