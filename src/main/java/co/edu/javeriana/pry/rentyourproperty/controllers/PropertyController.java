@@ -62,5 +62,6 @@ public ResponseEntity<List<PropertyDTO>> getPropertiesByCapacity(@PathVariable i
     PropertyDTO updatedProperty = propertyService.updateProperty(id, propertyDTO);
     return ResponseEntity.ok(updatedProperty);
 }
+//mirar las propiedadeds
 
 }
