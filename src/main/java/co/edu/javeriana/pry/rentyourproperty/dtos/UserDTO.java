@@ -1,19 +1,18 @@
 package co.edu.javeriana.pry.rentyourproperty.dtos;
 
-import co.edu.javeriana.pry.rentyourproperty.entities.Role;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-
 public class UserDTO {
+
     private Long id;
     private String name;
+    private String lastName;
     private String email;
     private String password;
-    private Role role;
+    private String phone;
+    private String role;
+
 }
