@@ -1,5 +1,6 @@
 package co.edu.javeriana.pry.rentyourproperty.dtos;
 
+import co.edu.javeriana.pry.rentyourproperty.entities.Income;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class PropertyDTO {
     private String photoUrl;
     private String department;
     private String municipality;
-    private String roadType;
+    private Income incomeType;
     private int rooms;
     private int bathrooms;
     private boolean allowsPets;

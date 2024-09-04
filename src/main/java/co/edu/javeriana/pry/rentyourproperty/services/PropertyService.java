@@ -30,6 +30,14 @@ public class PropertyService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PropertyValidationService validationService;
+
+//Api validation logic
+public PropertyService(PropertyValidationService validationService) {
+    this.validationService = validationService;
+}
+
 public List<PropertyDTO> getPropertiesByMunicipality(String municipality) {
     List<Property> properties = propertyRepository.findByMunicipalityIgnoreCase(municipality);
 
@@ -74,6 +82,12 @@ public List<PropertyDTO> getPropertiesByCapacity(int people) {
 
             if (!owner.getRole().equals(Role.ARRENDADOR)) {
                 throw new IllegalArgumentException("Only users with the ARRENDADOR role can be property owners.");
+            }
+
+            boolean isValidLocation = validationService.validateLocation(propertyDTO.getDepartment(), propertyDTO.getMunicipality());
+            
+            if (!isValidLocation) {
+                throw new IllegalArgumentException("Invalid department or municipality");
             }
 
          Property property = modelMapper.map(propertyDTO, Property.class);
