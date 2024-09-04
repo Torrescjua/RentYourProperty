@@ -22,10 +22,9 @@ import jakarta.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "properties")
-@Where(clause = "Status = 1")  // Filtrar solo propiedades activas
-@SQLDelete(sql = "UPDATE properties SET estado = 0 WHERE id = ?")
-
+@Table(name = "Property")
+@Where(clause = "status = 'Active'")
+@SQLDelete(sql = "UPDATE users SET status = 'Inactive' WHERE id=?")
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

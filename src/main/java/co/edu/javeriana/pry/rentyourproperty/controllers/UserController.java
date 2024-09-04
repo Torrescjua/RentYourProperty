@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.javeriana.pry.rentyourproperty.dtos.RentalRequestDTO;
 import co.edu.javeriana.pry.rentyourproperty.dtos.UserDTO;
 import co.edu.javeriana.pry.rentyourproperty.services.UserService;
 
@@ -32,6 +34,12 @@ public class UserController {
     public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO userDTO) {
         UserDTO savedUserDTO = userService.saveNew(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUserDTO);
+    }
+
+    // Autenticarse como usuario existente
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO logIn(@RequestParam String email, @RequestParam String password) {
+        return userService.logIn(email, password);
     }
 
     // Obtener un usuario por ID (GET)
@@ -60,6 +68,27 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        
+    }
+     // Get rental requests by user ID
+    @GetMapping(value = "/users/{userId}/rental-requests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RentalRequestDTO> getRentalRequestsByUserId(@PathVariable Long userId) {
+        return userService.getRentalRequests(userId);
+    }
+
+    // Get rental requests by UserDTO
+    @PostMapping(value = "/users/rental-requests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RentalRequestDTO> getRentalRequestsByUserDTO(@RequestBody UserDTO userDTO) {
+        return userService.getRentalRequests(userDTO);
+    }
+
+    // Accept or reject a rental request
+    @PostMapping(value = "/rental-requests/{requestId}/decision", produces = MediaType.APPLICATION_JSON_VALUE)
+    public RentalRequestDTO acceptOrRejectRentalRequest(
+            @PathVariable Long requestId,
+            @RequestParam boolean isAccepted,
+            @RequestBody UserDTO userDTO) {
+        return userService.acceptOrRejectRequest(requestId, isAccepted, userDTO);
     }
 }
 
