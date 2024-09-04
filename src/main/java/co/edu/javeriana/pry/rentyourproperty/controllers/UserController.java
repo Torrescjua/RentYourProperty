@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.javeriana.pry.rentyourproperty.dtos.RentalRequestDTO;
 import co.edu.javeriana.pry.rentyourproperty.dtos.UserDTO;
 import co.edu.javeriana.pry.rentyourproperty.services.UserService;
+import jakarta.validation.Valid;
 
 @CrossOrigin
 @RestController
@@ -31,7 +32,7 @@ public class UserController {
 
     // Crear un nuevo usuario (POST)
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> insertUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserDTO userDTO) {
         UserDTO savedUserDTO = userService.saveNew(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUserDTO);
     }
