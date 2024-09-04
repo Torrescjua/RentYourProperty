@@ -1,6 +1,7 @@
 package co.edu.javeriana.pry.rentyourproperty.entities;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -11,6 +12,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -60,16 +63,16 @@ public class User {
     private String activationToken;
     private LocalDateTime tokenExpiration;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    // Comentarios adicionales de asociaciones pueden ser utilizados según necesidad.
-    // @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Property> properties;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Property> properties;
 
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<RentalRequest> rentalRequests;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RentalRequest> rentalRequests;
 }

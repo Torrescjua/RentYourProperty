@@ -53,11 +53,11 @@ public class UserService {
     // Método POST para crear un nuevo usuario
     public UserDTO saveNew(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
-        user.setStatus(Status.INACTIVE); // Inicialmente inactivo
+        user.setStatus(Status.ACTIVE); // Inicialmente inactivo
         user = userRepository.save(user);
 
         // Enviar correo de activación
-        // activationService.sendActivationEmail(user);
+        activationService.sendActivationEmail(user);
         
         return modelMapper.map(user, UserDTO.class);
     }

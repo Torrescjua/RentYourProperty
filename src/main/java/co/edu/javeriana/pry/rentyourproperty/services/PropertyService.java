@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import co.edu.javeriana.pry.rentyourproperty.dtos.PropertyDTO;
 import co.edu.javeriana.pry.rentyourproperty.entities.Property;
+import co.edu.javeriana.pry.rentyourproperty.entities.Role;
 import co.edu.javeriana.pry.rentyourproperty.entities.Status;
 import co.edu.javeriana.pry.rentyourproperty.entities.User;
 import co.edu.javeriana.pry.rentyourproperty.exceptions.ResourceNotFoundException;
@@ -28,6 +29,14 @@ public class PropertyService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private PropertyValidationService validationService;
+
+//Api validation logic
+public PropertyService(PropertyValidationService validationService) {
+    this.validationService = validationService;
+}
 
 public List<PropertyDTO> getPropertiesByMunicipality(String municipality) {
     List<Property> properties = propertyRepository.findByMunicipalityIgnoreCase(municipality);
@@ -70,6 +79,17 @@ public List<PropertyDTO> getPropertiesByCapacity(int people) {
      public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
           User owner = userRepository.findById(ownerId)
             .orElseThrow(() -> new ResourceNotFoundException("Owner not found with id " + ownerId));
+
+            if (!owner.getRole().equals(Role.ARRENDADOR)) {
+                throw new IllegalArgumentException("Only users with the ARRENDADOR role can be property owners.");
+            }
+
+            boolean isValidLocation = validationService.validateLocation(propertyDTO.getDepartment(), propertyDTO.getMunicipality());
+            
+            if (!isValidLocation) {
+                throw new IllegalArgumentException("Invalid department or municipality");
+            }
+
          Property property = modelMapper.map(propertyDTO, Property.class);
           property.setOwner(owner);
           property.setStatus(Status.ACTIVE); // Inicialmente activo

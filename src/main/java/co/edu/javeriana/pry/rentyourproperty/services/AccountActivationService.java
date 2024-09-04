@@ -23,14 +23,13 @@ public class AccountActivationService {
     public void sendActivationEmail(User user) {
         String token = UUID.randomUUID().toString();
         user.setActivationToken(token);
-        user.setTokenExpiration(LocalDateTime.now().plusHours(24)); // Token válido por 24 horas
+        user.setTokenExpiration(LocalDateTime.now().plusHours(24));
 
         userRepository.save(user);
 
-        String activationLink = "http://localhost:8080/activate?token=" + token;
+        String activationLink = "http://localhost:8080/api/activation/activate?token=" + token;
         String message = "Por favor, activa tu cuenta utilizando el siguiente enlace: " + activationLink;
 
-        // Uncomment the line below to actually send the email
         emailService.sendSimpleMessage(user.getEmail(), "Activación de cuenta", message);
     }
 
@@ -43,8 +42,8 @@ public class AccountActivationService {
         }
 
         user.setStatus(Status.ACTIVE);
-        user.setActivationToken(null);  // Limpiar el token después de la activación
-        user.setTokenExpiration(null);  // Limpiar la expiración del token
+        user.setActivationToken(null);
+        user.setTokenExpiration(null);
 
         userRepository.save(user);
     }
