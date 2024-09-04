@@ -98,6 +98,20 @@ public List<PropertyDTO> getPropertiesByCapacity(int people) {
      return modelMapper.map(updatedProperty, PropertyDTO.class);
      }
 
+     // metodo para traeer todas las propiedades del arrendatario 
+     public List<PropertyDTO> getPropertiesByOwnerId(Long ownerId) {
+        List<Property> properties = propertyRepository.findByOwnerId(ownerId);
+        
+        if (properties.isEmpty()) {
+            throw new ResourceNotFoundException("No properties found for the owner with ID: " + ownerId);
+        }
+    
+        return properties.stream()
+                         .map(property -> modelMapper.map(property, PropertyDTO.class))
+                         .collect(Collectors.toList());
+    }
+    
+
 
 
 }

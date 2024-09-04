@@ -61,7 +61,14 @@ public ResponseEntity<List<PropertyDTO>> getPropertiesByCapacity(@PathVariable i
     public ResponseEntity<PropertyDTO> updateProperty(@PathVariable Long id, @RequestBody PropertyDTO propertyDTO) {
     PropertyDTO updatedProperty = propertyService.updateProperty(id, propertyDTO);
     return ResponseEntity.ok(updatedProperty);
-}
-//mirar las propiedadeds
+    }
+    
+    //mirar las propiedades que estan acargo del arrendatario 
+    @GetMapping("/owner/{ownerId}")
+  public ResponseEntity<List<PropertyDTO>> getPropertiesByOwnerId(@PathVariable Long ownerId) {
+    List<PropertyDTO> properties = propertyService.getPropertiesByOwnerId(ownerId);
+    return ResponseEntity.ok(properties);
+    }
+
 
 }
