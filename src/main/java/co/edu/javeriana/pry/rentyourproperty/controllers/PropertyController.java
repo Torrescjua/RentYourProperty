@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,12 +35,12 @@ public class PropertyController {
         PropertyDTO updatedProperty = propertyService.updateProperty(propertyId, PropertyDTO);
         return updatedProperty;
     }
-    @PostMapping(value ="/get" , produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value ="/get" , produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PropertyDTO> get() {
         return propertyService.get();
     }
 
-    @PostMapping(value ="/get/{propertyId}" , produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value ="/get/{propertyId}" , produces = MediaType.APPLICATION_JSON_VALUE)
     public PropertyDTO get(@PathVariable Long propertyId) {
         return propertyService.get(propertyId);
     }
