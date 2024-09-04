@@ -1,9 +1,9 @@
 package co.edu.javeriana.pry.rentyourproperty.services;
 
 
+
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,63 +29,75 @@ public class PropertyService {
     @Autowired
     private ModelMapper modelMapper;
 
-      // User CRUD
-    public List<PropertyDTO> get() {
-        List<Property> properties = (List<Property>) propertyRepository.findAll();
-        List<PropertyDTO>  propertyDTOs =properties.stream()
-        //    .filter(property -> property.getStatus() == Status.ACTIVE)
-            .map(property -> modelMapper.map(property, PropertyDTO.class))
-            .collect(Collectors.toList());
-        return propertyDTOs;
+public List<PropertyDTO> getPropertiesByMunicipality(String municipality) {
+    List<Property> properties = propertyRepository.findByMunicipalityIgnoreCase(municipality);
+
+    if (properties.isEmpty()) {
+        throw new ResourceNotFoundException("No properties found in municipality: " + municipality);
     }
 
-   // Método GET para un usuario por ID
-    public PropertyDTO get(Long id) {
-        Property property = propertyRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + id));
-        return modelMapper.map(property, PropertyDTO.class);
-    }
-
-    // Método de creación (crea una propiedad y devuelve la entidad Property)
-    public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
-        User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
-
-        Property property = modelMapper.map(propertyDTO, Property.class);
-        property.setOwner(owner);
-        propertyRepository.save(property);
-        return modelMapper.map(property, PropertyDTO.class);
-    }
-
-    public PropertyDTO updateProperty(Long propertyId, PropertyDTO propertyDTO) {
-        // Busca la propiedad en la base de datos
-        Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
-        property = modelMapper.map(propertyDTO, Property.class);
-        property = propertyRepository.save(property);
-        // Guarda la entidad actualizada en la base de datos
-        return modelMapper.map(property, PropertyDTO.class);
-    }
-
-
-    // Método para desactivar la propiedad
-    public PropertyDTO deactivateProperty(Long propertyId) {
-        Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
-        
-        property.setStatus(Status.INACTIVE);
-        propertyRepository.save(property);
-        return modelMapper.map(property, PropertyDTO.class);
-    }
-/* 
- // Método para la búsqueda de propiedades
- public List<PropertyDTO> searchProperties(String name, String municipality) {
-    List<Property> properties = propertyRepository.findByNameContainingIgnoreCaseAndMunicipalityAndEstado(name, municipality, Status.ACTIVE);
     return properties.stream()
                      .map(property -> modelMapper.map(property, PropertyDTO.class))
                      .collect(Collectors.toList());
 }
-*/
+
+public List<PropertyDTO> getPropertiesByName(String name) {
+    List<Property> properties = propertyRepository.findByNameIgnoreCase(name);
+
+    if (properties.isEmpty()) {
+        throw new ResourceNotFoundException("No properties found with name: " + name);
+    }
+
+    return properties.stream()
+                     .map(property -> modelMapper.map(property, PropertyDTO.class))
+                     .collect(Collectors.toList());
+}
+
+public List<PropertyDTO> getPropertiesByCapacity(int people) {
+    List<Property> properties = propertyRepository.findByRoomsGreaterThanEqual(people);
+
+    if (properties.isEmpty()) {
+        throw new ResourceNotFoundException("No properties found for " + people + " or more people.");
+    }
+
+    return properties.stream()
+                     .map(property -> modelMapper.map(property, PropertyDTO.class))
+                     .collect(Collectors.toList());
+}
+
+
+    // Método POST para crear una nueva propiedad
+     public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
+          User owner = userRepository.findById(ownerId)
+            .orElseThrow(() -> new ResourceNotFoundException("Owner not found with id " + ownerId));
+         Property property = modelMapper.map(propertyDTO, Property.class);
+          property.setOwner(owner);
+          property.setStatus(Status.ACTIVE); // Inicialmente activo
+          property = propertyRepository.save(property);
+     return modelMapper.map(property, PropertyDTO.class);
+    }
+
+    // Método PUT para desactivar una propiedad
+      public PropertyDTO deactivateProperty(Long propertyId) {
+     Property property = propertyRepository.findById(propertyId)
+            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + propertyId));
+       property.setStatus(Status.INACTIVE);
+       property = propertyRepository.save(property);
+       return modelMapper.map(property, PropertyDTO.class);
+   }
+
+   //metodo para la actualizacion de los datos de las propiedades
+   public PropertyDTO updateProperty(Long id, PropertyDTO propertyDTO) {
+     Property existingProperty = propertyRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + id));
+
+      modelMapper.map(propertyDTO, existingProperty);  // Actualiza los valores de la propiedad existente con los nuevos valores
+      existingProperty.setId(id); // Asegurarse de mantener el mismo ID
+    
+     Property updatedProperty = propertyRepository.save(existingProperty);
+     return modelMapper.map(updatedProperty, PropertyDTO.class);
+     }
+
 
 
 }
