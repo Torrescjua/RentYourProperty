@@ -57,7 +57,7 @@ public class UserService {
         user = userRepository.save(user);
 
         // Enviar correo de activación
-        // activationService.sendActivationEmail(user);
+        activationService.sendActivationEmail(user);
         
         return modelMapper.map(user, UserDTO.class);
     }

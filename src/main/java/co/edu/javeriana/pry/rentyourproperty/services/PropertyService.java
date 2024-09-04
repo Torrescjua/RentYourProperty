@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import co.edu.javeriana.pry.rentyourproperty.dtos.PropertyDTO;
 import co.edu.javeriana.pry.rentyourproperty.entities.Property;
+import co.edu.javeriana.pry.rentyourproperty.entities.Role;
 import co.edu.javeriana.pry.rentyourproperty.entities.Status;
 import co.edu.javeriana.pry.rentyourproperty.entities.User;
 import co.edu.javeriana.pry.rentyourproperty.exceptions.ResourceNotFoundException;
@@ -50,6 +51,10 @@ public class PropertyService {
     public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+        
+        if (!owner.getRole().equals(Role.ARRENDADOR)) {
+            throw new IllegalArgumentException("Only users with the ARRENDADOR role can be property owners.");
+        }
 
         Property property = modelMapper.map(propertyDTO, Property.class);
         property.setOwner(owner);
