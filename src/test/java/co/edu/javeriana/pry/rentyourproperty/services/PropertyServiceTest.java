@@ -35,7 +35,7 @@ class PropertyServiceTest {
     private PropertyService propertyService;
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);  // Initializes the @Mock and @InjectMocks annotations
+        MockitoAnnotations.openMocks(this);  
     }
     // Test for doesPropertyExist method
     @Test

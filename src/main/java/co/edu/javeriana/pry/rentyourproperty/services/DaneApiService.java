@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class DaneApiService {
+public class DaneAPIService {
 
     private static final String DANE_API_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json";
     private final RestTemplate restTemplate;
 
-    public DaneApiService(RestTemplate restTemplate) {
+    public DaneAPIService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
