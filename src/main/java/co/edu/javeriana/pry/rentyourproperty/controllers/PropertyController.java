@@ -2,7 +2,7 @@ package co.edu.javeriana.pry.rentyourproperty.controllers;
 import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.javeriana.pry.rentyourproperty.dtos.PropertyDTO;
 import co.edu.javeriana.pry.rentyourproperty.services.PropertyService;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/api/property")
 public class PropertyController {
