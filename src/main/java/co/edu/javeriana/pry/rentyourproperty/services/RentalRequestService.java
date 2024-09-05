@@ -1,7 +1,7 @@
 package co.edu.javeriana.pry.rentyourproperty.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -92,7 +92,7 @@ public class RentalRequestService {
 
         return rentalRequests.stream()
                              .map(rentalRequest -> modelMapper.map(rentalRequest, RentalRequestDTO.class))
-                             .collect(Collectors.toList());
+                             .toList();
     }
 
     public RentalRequestDTO acceptOrRejectRequest(Long requestId, boolean isAccepted, Long currentUserId) {

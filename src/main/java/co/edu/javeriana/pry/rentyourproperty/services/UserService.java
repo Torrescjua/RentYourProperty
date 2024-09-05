@@ -1,7 +1,7 @@
 package co.edu.javeriana.pry.rentyourproperty.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,8 @@ import co.edu.javeriana.pry.rentyourproperty.repositories.UserRepository;
 
 @Service
 public class UserService {
+
+    private static final String USER_NOT_FOUND = "User not found with id ";
 
     private final UserRepository userRepository;
 
@@ -32,16 +34,15 @@ public class UserService {
     // Método GET para todos los usuarios
     public List<UserDTO> get() {
         List<User> users = (List<User>) userRepository.findAll();
-        System.out.println("Total users: " + users.size());
         return users.stream()
                     .map(user -> modelMapper.map(user, UserDTO.class))
-                    .collect(Collectors.toList());
+                    .toList();
     }
     
     // Método GET para un usuario por ID
     public UserDTO get(Long id) {
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+            .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
         return modelMapper.map(user, UserDTO.class);
     }
 
@@ -60,7 +61,7 @@ public class UserService {
     // Método PUT para actualizar un usuario existente
     public UserDTO update(Long id, UserDTO userDTO) {
         User existingUser = userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+            .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
         
         modelMapper.map(userDTO, existingUser);
         existingUser.setId(id);
@@ -74,7 +75,7 @@ public class UserService {
     public void delete(Long id) {
 
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+            .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
         
         user.setStatus(Status.INACTIVE);
         userRepository.save(user);
@@ -99,7 +100,7 @@ public class UserService {
     public boolean isUserLandlord(Long userId) {
         return userRepository.findById(userId)
             .map(user -> Role.ARRENDADOR.equals(user.getRole()))
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + userId));
     }
    
     // Check if the user is active

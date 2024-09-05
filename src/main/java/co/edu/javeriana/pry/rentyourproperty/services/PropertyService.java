@@ -3,7 +3,7 @@ package co.edu.javeriana.pry.rentyourproperty.services;
 
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +18,8 @@ import co.edu.javeriana.pry.rentyourproperty.repositories.PropertyRepository;
 
 @Service
 public class PropertyService {
+
+    private static final String PROPERTY_NOT_FOUND = "Property not found with id ";
 
     private final PropertyRepository propertyRepository;
 
@@ -46,7 +48,7 @@ public class PropertyService {
     // Método GET para una propiedad por ID
     public PropertyDTO get(Long id) {
         Property property = propertyRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + id));
+            .orElseThrow(() -> new ResourceNotFoundException(PROPERTY_NOT_FOUND + id));
         return modelMapper.map(property, PropertyDTO.class);
     }
 
@@ -59,7 +61,7 @@ public class PropertyService {
 
         return properties.stream()
                         .map(property -> modelMapper.map(property, PropertyDTO.class))
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
     public List<PropertyDTO> getPropertiesByName(String name) {
@@ -71,7 +73,7 @@ public class PropertyService {
 
         return properties.stream()
                         .map(property -> modelMapper.map(property, PropertyDTO.class))
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
     public List<PropertyDTO> getPropertiesByCapacity(int people) {
@@ -83,7 +85,7 @@ public class PropertyService {
 
         return properties.stream()
                         .map(property -> modelMapper.map(property, PropertyDTO.class))
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
     // POST method to create a new property
@@ -113,7 +115,7 @@ public class PropertyService {
     // Método PUT para desactivar una propiedad
     public PropertyDTO deactivateProperty(Long propertyId) {
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + propertyId));
+                .orElseThrow(() -> new ResourceNotFoundException(PROPERTY_NOT_FOUND + propertyId));
         property.setStatus(Status.INACTIVE);
         property = propertyRepository.save(property);
         return modelMapper.map(property, PropertyDTO.class);
@@ -122,7 +124,7 @@ public class PropertyService {
     //metodo para la actualizacion de los datos de las propiedades
     public PropertyDTO updateProperty(Long id, PropertyDTO propertyDTO) {
         Property existingProperty = propertyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(PROPERTY_NOT_FOUND + id));
                 modelMapper.map(propertyDTO, existingProperty);  // Actualiza los valores de la propiedad existente con los nuevos valores
                 existingProperty.setId(id); // Asegurarse de mantener el mismo ID
                 
@@ -140,7 +142,7 @@ public class PropertyService {
     
         return properties.stream()
                          .map(property -> modelMapper.map(property, PropertyDTO.class))
-                         .collect(Collectors.toList());
+                         .toList();
     }
     
 
