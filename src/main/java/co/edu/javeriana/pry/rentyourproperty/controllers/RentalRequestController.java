@@ -2,7 +2,6 @@ package co.edu.javeriana.pry.rentyourproperty.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +20,11 @@ import co.edu.javeriana.pry.rentyourproperty.services.RentalRequestService;
 @RequestMapping("/api/rental-requests")
 public class RentalRequestController {
 
-    @Autowired
-    private RentalRequestService rentalRequestService;
+    private final RentalRequestService rentalRequestService;
+
+    RentalRequestController(RentalRequestService rentalRequestService) {
+        this.rentalRequestService = rentalRequestService;
+    }
 
     // Create a new rental request
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)

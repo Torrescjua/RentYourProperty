@@ -3,7 +3,6 @@ package co.edu.javeriana.pry.rentyourproperty.services;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.edu.javeriana.pry.rentyourproperty.entities.Status;
@@ -14,11 +13,14 @@ import co.edu.javeriana.pry.rentyourproperty.repositories.UserRepository;
 @Service
 public class AccountActivationService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
+
+    AccountActivationService(UserRepository userRepository, EmailService emailService) {
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+    }
 
     public void sendActivationEmail(User user) {
         String token = UUID.randomUUID().toString();

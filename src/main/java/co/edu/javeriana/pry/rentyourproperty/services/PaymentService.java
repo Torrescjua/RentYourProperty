@@ -1,7 +1,6 @@
 package co.edu.javeriana.pry.rentyourproperty.services;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.edu.javeriana.pry.rentyourproperty.dtos.PaymentDTO;
@@ -15,14 +14,17 @@ import co.edu.javeriana.pry.rentyourproperty.repositories.RentalRequestRepositor
 @Service
 public class PaymentService {
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
 
-    @Autowired
-    private RentalRequestRepository rentalRequestRepository;
+    private final RentalRequestRepository rentalRequestRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    PaymentService(PaymentRepository paymentRepository, RentalRequestRepository rentalRequestRepository, ModelMapper modelMapper) {
+        this.paymentRepository = paymentRepository;
+        this.rentalRequestRepository = rentalRequestRepository;
+        this.modelMapper = modelMapper;
+    }
 
     public PaymentDTO payRent(Long rentalRequestId, PaymentDTO paymentDTO) {
         RentalRequest rentalRequest = rentalRequestRepository.findById(rentalRequestId)

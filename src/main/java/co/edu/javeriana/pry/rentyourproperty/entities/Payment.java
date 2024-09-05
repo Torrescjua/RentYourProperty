@@ -1,8 +1,5 @@
 package co.edu.javeriana.pry.rentyourproperty.entities;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

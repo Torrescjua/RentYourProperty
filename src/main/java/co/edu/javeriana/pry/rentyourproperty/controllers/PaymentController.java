@@ -2,7 +2,6 @@ package co.edu.javeriana.pry.rentyourproperty.controllers;
 
 import co.edu.javeriana.pry.rentyourproperty.dtos.PaymentDTO;
 import co.edu.javeriana.pry.rentyourproperty.services.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/payments")
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
+
+    PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     @PostMapping("/pay/{rentalRequestId}")
     public ResponseEntity<PaymentDTO> payRent(

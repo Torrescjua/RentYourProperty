@@ -2,7 +2,6 @@ package co.edu.javeriana.pry.rentyourproperty.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +25,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/user")
 public class UserController {
     
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     // Crear un nuevo usuario (POST)
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -5,7 +5,6 @@ package co.edu.javeriana.pry.rentyourproperty.services;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.edu.javeriana.pry.rentyourproperty.dtos.PropertyDTO;
@@ -20,21 +19,23 @@ import co.edu.javeriana.pry.rentyourproperty.repositories.PropertyRepository;
 @Service
 public class PropertyService {
 
-    @Autowired
-    private PropertyRepository propertyRepository;
+    private final PropertyRepository propertyRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
     private PropertyValidationService propertyValidationService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     //Api validation logic
-    public PropertyService(PropertyValidationService propertyValidationService) {
+    public PropertyService(PropertyValidationService propertyValidationService, 
+                            PropertyRepository propertyRepository, 
+                            ModelMapper modelMapper, 
+                            UserService userService) {
         this.propertyValidationService = propertyValidationService;
+        this.propertyRepository = propertyRepository;
+        this.modelMapper = modelMapper;
+        this.userService = userService;
     }
 
     // Check if the property exists

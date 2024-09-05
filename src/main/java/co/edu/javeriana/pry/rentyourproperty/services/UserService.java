@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -18,14 +17,17 @@ import co.edu.javeriana.pry.rentyourproperty.repositories.UserRepository;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private AccountActivationService accountActivationService;
+    private final AccountActivationService accountActivationService;
+
+    UserService(UserRepository userRepository, ModelMapper modelMapper, AccountActivationService accountActivationService) {
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.accountActivationService = accountActivationService;
+    }
 
     // Método GET para todos los usuarios
     public List<UserDTO> get() {

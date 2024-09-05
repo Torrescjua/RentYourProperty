@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import co.edu.javeriana.pry.rentyourproperty.dtos.RentalRequestDTO;
@@ -20,23 +19,26 @@ import co.edu.javeriana.pry.rentyourproperty.repositories.UserRepository;
 
 @Service
 public class RentalRequestService {
-    @Autowired
-    private RentalRequestRepository rentalRequestRepository;
+    private final RentalRequestRepository rentalRequestRepository;
     
-    @Autowired
-    private PropertyRepository propertyRepository;
+    private final PropertyRepository propertyRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PropertyService propertyService;
+    private final PropertyService propertyService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    RentalRequestService(RentalRequestRepository rentalRequestRepository, PropertyRepository propertyRepository, UserRepository userRepository, PropertyService propertyService, UserService userService, ModelMapper modelMapper) {
+        this.rentalRequestRepository = rentalRequestRepository;
+        this.propertyRepository = propertyRepository;
+        this.userRepository = userRepository;
+        this.propertyService = propertyService;
+        this.userService = userService;
+        this.modelMapper = modelMapper;
+    }
 
     public RentalRequestDTO createRentalRequest(RentalRequestDTO rentalRequestDTO) {
         Long userId = rentalRequestDTO.getUserId();
