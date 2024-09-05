@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,9 +34,12 @@ public class RentalRequest {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NotNull(message = "RequestDate is required")
     private LocalDate requestDate;
+
     private LocalDate responseDate;
 
+    @NotNull(message = "RequestStatus is required")
     private RequestStatus requestStatus;
 
     @OneToOne(mappedBy = "rentalRequest", cascade = CascadeType.ALL, orphanRemoval = true)

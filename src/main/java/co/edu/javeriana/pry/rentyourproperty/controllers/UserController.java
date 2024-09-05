@@ -2,7 +2,6 @@ package co.edu.javeriana.pry.rentyourproperty.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.javeriana.pry.rentyourproperty.dtos.RentalRequestDTO;
 import co.edu.javeriana.pry.rentyourproperty.dtos.UserDTO;
 import co.edu.javeriana.pry.rentyourproperty.services.UserService;
 import jakarta.validation.Valid;
@@ -27,8 +25,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/user")
 public class UserController {
     
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     // Crear un nuevo usuario (POST)
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -71,25 +72,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         
     }
-     // Get rental requests by user ID
-    @GetMapping(value = "/users/{userId}/rental-requests", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RentalRequestDTO> getRentalRequestsByUserId(@PathVariable Long userId) {
-        return userService.getRentalRequests(userId);
-    }
 
-    // Get rental requests by UserDTO
-    @PostMapping(value = "/users/rental-requests", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RentalRequestDTO> getRentalRequestsByUserDTO(@RequestBody UserDTO userDTO) {
-        return userService.getRentalRequests(userDTO);
-    }
-
-    // Accept or reject a rental request
-    @PostMapping(value = "/rental-requests/{requestId}/decision", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RentalRequestDTO acceptOrRejectRentalRequest(
-            @PathVariable Long requestId,
-            @RequestParam boolean isAccepted,
-            @RequestBody UserDTO userDTO) {
-        return userService.acceptOrRejectRequest(requestId, isAccepted, userDTO);
-    }
 }
 

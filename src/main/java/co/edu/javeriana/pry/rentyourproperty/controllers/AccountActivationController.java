@@ -1,6 +1,5 @@
 package co.edu.javeriana.pry.rentyourproperty.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +12,11 @@ import co.edu.javeriana.pry.rentyourproperty.services.AccountActivationService;
 @RequestMapping("/api/activation")
 public class AccountActivationController {
 
-    @Autowired
-    private AccountActivationService activationService;
+    private final AccountActivationService activationService;
+
+    AccountActivationController(AccountActivationService activationService) {
+        this.activationService = activationService;
+    }
 
     @GetMapping("/activate")
     public ResponseEntity<String> activateAccount(@RequestParam("token") String token) {

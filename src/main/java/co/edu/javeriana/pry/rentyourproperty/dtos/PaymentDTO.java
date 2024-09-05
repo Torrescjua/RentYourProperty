@@ -3,7 +3,9 @@ import lombok.Data;
 
 @Data
 public class PaymentDTO {
-    private Double amount;
-    private String paymentDate;
-    private Long rentalRequestId; // Referencia al ID de la solicitud de arrendamiento
+    private Long id;
+    private double amount;
+    private String bank;
+    private String accountNumber;
+    private Long rentalRequestId;
 }

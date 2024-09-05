@@ -3,39 +3,53 @@ package co.edu.javeriana.pry.rentyourproperty.services;
 
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.edu.javeriana.pry.rentyourproperty.dtos.PropertyDTO;
+import co.edu.javeriana.pry.rentyourproperty.dtos.UserDTO;
 import co.edu.javeriana.pry.rentyourproperty.entities.Property;
-import co.edu.javeriana.pry.rentyourproperty.entities.Role;
 import co.edu.javeriana.pry.rentyourproperty.entities.Status;
 import co.edu.javeriana.pry.rentyourproperty.entities.User;
 import co.edu.javeriana.pry.rentyourproperty.exceptions.ResourceNotFoundException;
+import co.edu.javeriana.pry.rentyourproperty.exceptions.UnauthorizedException;
 import co.edu.javeriana.pry.rentyourproperty.repositories.PropertyRepository;
-import co.edu.javeriana.pry.rentyourproperty.repositories.UserRepository;
-
 
 @Service
 public class PropertyService {
 
-    @Autowired
-    private PropertyRepository propertyRepository;
+    private static final String PROPERTY_NOT_FOUND = "Property not found with id ";
 
-    @Autowired
-    private UserRepository userRepository;
+    private final PropertyRepository propertyRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private PropertyValidationService validationService;
+    private PropertyValidationService propertyValidationService;
 
-//Api validation logic
-    public PropertyService(PropertyValidationService validationService) {
-        this.validationService = validationService;
+    private final UserService userService;
+
+    //Api validation logic
+    public PropertyService(PropertyValidationService propertyValidationService, 
+                            PropertyRepository propertyRepository, 
+                            ModelMapper modelMapper, 
+                            UserService userService) {
+        this.propertyValidationService = propertyValidationService;
+        this.propertyRepository = propertyRepository;
+        this.modelMapper = modelMapper;
+        this.userService = userService;
+    }
+
+    // Check if the property exists
+    public boolean doesPropertyExist(Long propertyId) {
+    return propertyRepository.existsById(propertyId);
+    }
+    
+    // Método GET para una propiedad por ID
+    public PropertyDTO get(Long id) {
+        Property property = propertyRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(PROPERTY_NOT_FOUND + id));
+        return modelMapper.map(property, PropertyDTO.class);
     }
 
     public List<PropertyDTO> getPropertiesByMunicipality(String municipality) {
@@ -47,7 +61,7 @@ public class PropertyService {
 
         return properties.stream()
                         .map(property -> modelMapper.map(property, PropertyDTO.class))
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
     public List<PropertyDTO> getPropertiesByName(String name) {
@@ -59,7 +73,7 @@ public class PropertyService {
 
         return properties.stream()
                         .map(property -> modelMapper.map(property, PropertyDTO.class))
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
     public List<PropertyDTO> getPropertiesByCapacity(int people) {
@@ -71,53 +85,53 @@ public class PropertyService {
 
         return properties.stream()
                         .map(property -> modelMapper.map(property, PropertyDTO.class))
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
+    // POST method to create a new property
+    public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
+        if (!userService.isUserLandlord(ownerId)) {
+            throw new UnauthorizedException("Only users with the ARRENDADOR role can be property owners.");
+        }
+        Property property = modelMapper.map(propertyDTO, Property.class);
 
-    // Método POST para crear una nueva propiedad
-     public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
-          User owner = userRepository.findById(ownerId)
-            .orElseThrow(() -> new ResourceNotFoundException("Owner not found with id " + ownerId));
-
-            if (!owner.getRole().equals(Role.ARRENDADOR)) {
-                throw new IllegalArgumentException("Only users with the ARRENDADOR role can be property owners.");
-            }
-
-            boolean isValidLocation = validationService.validateLocation(propertyDTO.getDepartment(), propertyDTO.getMunicipality());
+            boolean isValidLocation = propertyValidationService.validateLocation(propertyDTO.getDepartment(), propertyDTO.getMunicipality());
             
             if (!isValidLocation) {
                 throw new IllegalArgumentException("Invalid department or municipality");
             }
 
-         Property property = modelMapper.map(propertyDTO, Property.class);
-          property.setOwner(owner);
-          property.setStatus(Status.ACTIVE); // Inicialmente activo
-          property = propertyRepository.save(property);
-     return modelMapper.map(property, PropertyDTO.class);
+        UserDTO ownerDTO = userService.get(ownerId);
+        User owner = modelMapper.map(ownerDTO, User.class);
+
+        property.setOwner(owner);
+        property.setStatus(Status.ACTIVE); // Set status to active
+
+        property = propertyRepository.save(property);
+
+        return modelMapper.map(property, PropertyDTO.class);
     }
 
     // Método PUT para desactivar una propiedad
     public PropertyDTO deactivateProperty(Long propertyId) {
-     Property property = propertyRepository.findById(propertyId)
-            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + propertyId));
-       property.setStatus(Status.INACTIVE);
-       property = propertyRepository.save(property);
-       return modelMapper.map(property, PropertyDTO.class);
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException(PROPERTY_NOT_FOUND + propertyId));
+        property.setStatus(Status.INACTIVE);
+        property = propertyRepository.save(property);
+        return modelMapper.map(property, PropertyDTO.class);
     }
 
-   //metodo para la actualizacion de los datos de las propiedades
-   public PropertyDTO updateProperty(Long id, PropertyDTO propertyDTO) {
-     Property existingProperty = propertyRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + id));
-
-      modelMapper.map(propertyDTO, existingProperty);  // Actualiza los valores de la propiedad existente con los nuevos valores
-      existingProperty.setId(id); // Asegurarse de mantener el mismo ID
-    
-     Property updatedProperty = propertyRepository.save(existingProperty);
-     return modelMapper.map(updatedProperty, PropertyDTO.class);
-     }
-
+    //metodo para la actualizacion de los datos de las propiedades
+    public PropertyDTO updateProperty(Long id, PropertyDTO propertyDTO) {
+        Property existingProperty = propertyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(PROPERTY_NOT_FOUND + id));
+                modelMapper.map(propertyDTO, existingProperty);  // Actualiza los valores de la propiedad existente con los nuevos valores
+                existingProperty.setId(id); // Asegurarse de mantener el mismo ID
+                
+        Property updatedProperty = propertyRepository.save(existingProperty);
+        return modelMapper.map(updatedProperty, PropertyDTO.class);
+    }
+        
      // metodo para traeer todas las propiedades del arrendatario 
      public List<PropertyDTO> getPropertiesByOwnerId(Long ownerId) {
         List<Property> properties = propertyRepository.findByOwnerId(ownerId);
@@ -128,11 +142,11 @@ public class PropertyService {
     
         return properties.stream()
                          .map(property -> modelMapper.map(property, PropertyDTO.class))
-                         .collect(Collectors.toList());
+                         .toList();
     }
     
 
-
+  
 
 }
 

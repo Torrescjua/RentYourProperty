@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class DaneApiService {
+public class DaneAPIService {
 
     private static final String DANE_API_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json";
     private final RestTemplate restTemplate;
 
-    public DaneApiService(RestTemplate restTemplate) {
+    public DaneAPIService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
@@ -26,25 +26,25 @@ public class DaneApiService {
      * @return A map where keys are departments and values are lists of municipalities.
      */
     public Map<String, List<String>> getDepartmentsAndMunicipalities() {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(DANE_API_URL);
-
-        // Realizar la solicitud a la API y deserializar la respuesta en un array de DepartmentMunicipality
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(DANE_API_URL);
+    
+        // Make the API call and deserialize the response into an array of DepartmentMunicipality
         DepartmentMunicipality[] response = restTemplate.getForObject(uriBuilder.toUriString(), DepartmentMunicipality[].class);
-
+    
         Map<String, List<String>> departmentMunicipalitiesMap = new HashMap<>();
         if (response != null) {
             for (DepartmentMunicipality entry : response) {
                 String department = entry.getDepartamento();
                 String municipality = entry.getMunicipio();
                 
-                // Agregar los municipios bajo su respectivo departamento
+                // Add the municipalities under their respective department
                 departmentMunicipalitiesMap.computeIfAbsent(department, k -> new ArrayList<>()).add(municipality);
             }
         }
-
+    
         return departmentMunicipalitiesMap;
     }
-
+    
     /**
      * Validates if the department and municipality exist based on the DANE data.
      * @param department Department to validate.

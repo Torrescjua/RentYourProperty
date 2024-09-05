@@ -3,7 +3,6 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +20,11 @@ import co.edu.javeriana.pry.rentyourproperty.services.PropertyService;
 @RequestMapping("/api/property")
 public class PropertyController {
 
-    @Autowired
-    private PropertyService propertyService;
+    private final PropertyService propertyService;
+
+    PropertyController(PropertyService propertyService) {
+        this.propertyService = propertyService;
+    }
 
     @GetMapping("/municipality/{municipality}")
     public ResponseEntity<List<PropertyDTO>> getPropertiesByMunicipality(@PathVariable String municipality) {
@@ -44,8 +46,8 @@ public class PropertyController {
 
     @PostMapping(value ="/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PropertyDTO> createProperty(@RequestBody PropertyDTO propertyDTO, @RequestParam Long ownerId) {
-    PropertyDTO createdProperty = propertyService.createProperty(propertyDTO, ownerId);
-    return ResponseEntity.ok(createdProperty);
+        PropertyDTO createdProperty = propertyService.createProperty(propertyDTO, ownerId);
+        return ResponseEntity.ok(createdProperty);
     }
 
     
