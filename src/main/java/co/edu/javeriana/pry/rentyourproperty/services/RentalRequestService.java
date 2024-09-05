@@ -118,7 +118,7 @@ public class RentalRequestService {
         boolean isLandlord = !userService.isUserLandlord(currentUserId);
 
         // Return true if the user is either the requester or a tenant
-        return isRequester || isLandlord;
+        return isRequester && isLandlord;
     }
 
 }
