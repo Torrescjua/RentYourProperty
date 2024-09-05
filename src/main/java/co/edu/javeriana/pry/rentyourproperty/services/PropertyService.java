@@ -34,45 +34,45 @@ public class PropertyService {
     private PropertyValidationService validationService;
 
 //Api validation logic
-public PropertyService(PropertyValidationService validationService) {
-    this.validationService = validationService;
-}
-
-public List<PropertyDTO> getPropertiesByMunicipality(String municipality) {
-    List<Property> properties = propertyRepository.findByMunicipalityIgnoreCase(municipality);
-
-    if (properties.isEmpty()) {
-        throw new ResourceNotFoundException("No properties found in municipality: " + municipality);
+    public PropertyService(PropertyValidationService validationService) {
+        this.validationService = validationService;
     }
 
-    return properties.stream()
-                     .map(property -> modelMapper.map(property, PropertyDTO.class))
-                     .collect(Collectors.toList());
-}
+    public List<PropertyDTO> getPropertiesByMunicipality(String municipality) {
+        List<Property> properties = propertyRepository.findByMunicipalityIgnoreCase(municipality);
 
-public List<PropertyDTO> getPropertiesByName(String name) {
-    List<Property> properties = propertyRepository.findByNameIgnoreCase(name);
+        if (properties.isEmpty()) {
+            throw new ResourceNotFoundException("No properties found in municipality: " + municipality);
+        }
 
-    if (properties.isEmpty()) {
-        throw new ResourceNotFoundException("No properties found with name: " + name);
+        return properties.stream()
+                        .map(property -> modelMapper.map(property, PropertyDTO.class))
+                        .collect(Collectors.toList());
     }
 
-    return properties.stream()
-                     .map(property -> modelMapper.map(property, PropertyDTO.class))
-                     .collect(Collectors.toList());
-}
+    public List<PropertyDTO> getPropertiesByName(String name) {
+        List<Property> properties = propertyRepository.findByNameIgnoreCase(name);
 
-public List<PropertyDTO> getPropertiesByCapacity(int people) {
-    List<Property> properties = propertyRepository.findByRoomsGreaterThanEqual(people);
+        if (properties.isEmpty()) {
+            throw new ResourceNotFoundException("No properties found with name: " + name);
+        }
 
-    if (properties.isEmpty()) {
-        throw new ResourceNotFoundException("No properties found for " + people + " or more people.");
+        return properties.stream()
+                        .map(property -> modelMapper.map(property, PropertyDTO.class))
+                        .collect(Collectors.toList());
     }
 
-    return properties.stream()
-                     .map(property -> modelMapper.map(property, PropertyDTO.class))
-                     .collect(Collectors.toList());
-}
+    public List<PropertyDTO> getPropertiesByCapacity(int people) {
+        List<Property> properties = propertyRepository.findByRoomsGreaterThanEqual(people);
+
+        if (properties.isEmpty()) {
+            throw new ResourceNotFoundException("No properties found for " + people + " or more people.");
+        }
+
+        return properties.stream()
+                        .map(property -> modelMapper.map(property, PropertyDTO.class))
+                        .collect(Collectors.toList());
+    }
 
 
     // Método POST para crear una nueva propiedad
@@ -98,13 +98,13 @@ public List<PropertyDTO> getPropertiesByCapacity(int people) {
     }
 
     // Método PUT para desactivar una propiedad
-      public PropertyDTO deactivateProperty(Long propertyId) {
+    public PropertyDTO deactivateProperty(Long propertyId) {
      Property property = propertyRepository.findById(propertyId)
             .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + propertyId));
        property.setStatus(Status.INACTIVE);
        property = propertyRepository.save(property);
        return modelMapper.map(property, PropertyDTO.class);
-   }
+    }
 
    //metodo para la actualizacion de los datos de las propiedades
    public PropertyDTO updateProperty(Long id, PropertyDTO propertyDTO) {
