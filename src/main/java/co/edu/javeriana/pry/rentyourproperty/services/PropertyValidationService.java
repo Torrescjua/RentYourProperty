@@ -19,6 +19,7 @@ public class PropertyValidationService {
      * @return true if valid, false otherwise.
      */
     public boolean validateLocation(String department, String municipality) {
+        
         return daneAPIService.validateLocation(department, municipality);
     }
 }
