@@ -73,5 +73,19 @@ public class UserController {
         
     }
 
+    //buscar los usuarios por el rol de arrendador 
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<UserDTO>> getUsersByRole(@PathVariable String role) {
+    try {
+        List<UserDTO> landlords = userService.getUsersByRole(role);
+        return ResponseEntity.ok(landlords);
+    } catch (Exception e) {
+        System.err.println("Error al obtener los usuarios con rol " + role + ": " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+   }
+
+
+
 }
 

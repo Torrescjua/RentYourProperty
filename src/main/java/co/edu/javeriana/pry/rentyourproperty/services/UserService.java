@@ -109,4 +109,18 @@ public class UserService {
             .map(user -> Status.ACTIVE.equals(user.getStatus()))
             .orElse(false);
     }
+
+    // check list for users by type  Arrendador 
+    public List<UserDTO> getUsersByRole(String role) {
+        Role roleEnum = Role.valueOf(role.toUpperCase());
+        List<User> users = userRepository.findByRole(roleEnum).orElseGet(() -> List.of());
+        return users.stream()
+                    .map(user -> modelMapper.map(user, UserDTO.class))
+                    .toList();
+    }
+    
+    
+    
+    
+    
 }
