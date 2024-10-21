@@ -65,7 +65,7 @@ public class PropertyController {
     return ResponseEntity.ok(updatedProperty);
     }
     
-    //mirar las propiedades que estan acargo del arrendatario 
+    //mirar las propiedades que estan acargo del arrendador
     @GetMapping("/owner/{ownerId}")
   public ResponseEntity<List<PropertyDTO>> getPropertiesByOwnerId(@PathVariable Long ownerId) {
     List<PropertyDTO> properties = propertyService.getPropertiesByOwnerId(ownerId);
