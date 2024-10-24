@@ -12,23 +12,23 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class DaneAPIService {
+public class DaneApiService {
 
-    private static final String DANE_API_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json";
+    private static final String DANE_Api_URL = "https://www.datos.gov.co/resource/xdk5-pm3f.json";
     private final RestTemplate restTemplate;
 
-    public DaneAPIService(RestTemplate restTemplate) {
+    public DaneApiService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     /**
-     * Fetches departments and municipalities from the DANE API and maps them.
+     * Fetches departments and municipalities from the DANE Api and maps them.
      * @return A map where keys are departments and values are lists of municipalities.
      */
     public Map<String, List<String>> getDepartmentsAndMunicipalities() {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(DANE_API_URL);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(DANE_Api_URL);
     
-        // Make the API call and deserialize the response into an array of DepartmentMunicipality
+        // Make the Api call and deserialize the response into an array of DepartmentMunicipality
         DepartmentMunicipality[] response = restTemplate.getForObject(uriBuilder.toUriString(), DepartmentMunicipality[].class);
     
         Map<String, List<String>> departmentMunicipalitiesMap = new HashMap<>();
@@ -52,7 +52,7 @@ public class DaneAPIService {
      * @return true if the department and municipality are valid, false otherwise.
      */
     public boolean validateLocation(String department, String municipality) {
-        // Obtiene el mapa de departamentos y municipios desde la API
+        // Obtiene el mapa de departamentos y municipios desde la Api
         Map<String, List<String>> departmentsAndMunicipalities = getDepartmentsAndMunicipalities();
 
         // Busca si el departamento está presente

@@ -14,13 +14,13 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class DaneAPIServiceTest {
+class DaneApiServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private DaneAPIService daneAPIService;
+    private DaneApiService daneApiService;
 
     @BeforeEach
     void setUp() {
@@ -29,7 +29,7 @@ class DaneAPIServiceTest {
 
     @Test
     void testGetDepartmentsAndMunicipalities_Success() {
-        // Arrange: mock the DANE API response
+        // Arrange: mock the DANE Api response
         DepartmentMunicipality[] mockResponse = new DepartmentMunicipality[]{
                 new DepartmentMunicipality("Region1", 1, "Department1", 101, "Municipality1"),
                 new DepartmentMunicipality("Region1", 1, "Department1", 102, "Municipality2"),
@@ -39,7 +39,7 @@ class DaneAPIServiceTest {
         when(restTemplate.getForObject(anyString(), eq(DepartmentMunicipality[].class))).thenReturn(mockResponse);
 
         // Act: Call the service method
-        Map<String, List<String>> result = daneAPIService.getDepartmentsAndMunicipalities();
+        Map<String, List<String>> result = daneApiService.getDepartmentsAndMunicipalities();
 
         // Assert: Validate the structure of the returned map
         assertNotNull(result);
@@ -52,20 +52,20 @@ class DaneAPIServiceTest {
 
     @Test
     void testGetDepartmentsAndMunicipalities_NullResponse() {
-        // Arrange: simulate a null response from the API
+        // Arrange: simulate a null response from the Api
         when(restTemplate.getForObject(anyString(), eq(DepartmentMunicipality[].class))).thenReturn(null);
 
         // Act: Call the service method
-        Map<String, List<String>> result = daneAPIService.getDepartmentsAndMunicipalities();
+        Map<String, List<String>> result = daneApiService.getDepartmentsAndMunicipalities();
 
-        // Assert: The map should be empty when the API returns null
+        // Assert: The map should be empty when the Api returns null
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
     void testValidateLocation_Success() {
-        // Arrange: mock the DANE API response
+        // Arrange: mock the DANE Api response
         DepartmentMunicipality[] mockResponse = new DepartmentMunicipality[]{
                 new DepartmentMunicipality("Region1", 1, "Department1", 101, "Municipality1"),
                 new DepartmentMunicipality("Region1", 1, "Department1", 102, "Municipality2"),
@@ -74,21 +74,21 @@ class DaneAPIServiceTest {
         when(restTemplate.getForObject(anyString(), eq(DepartmentMunicipality[].class))).thenReturn(mockResponse);
 
         // Act & Assert: Test valid location
-        boolean isValid = daneAPIService.validateLocation("Department1", "Municipality1");
+        boolean isValid = daneApiService.validateLocation("Department1", "Municipality1");
         assertTrue(isValid);
 
         // Test case-insensitive validation
-        boolean isValidCaseInsensitive = daneAPIService.validateLocation("Department1", "municipality1");
+        boolean isValidCaseInsensitive = daneApiService.validateLocation("Department1", "municipality1");
         assertTrue(isValidCaseInsensitive);
 
         // Test validation for another department and municipality
-        boolean isValid2 = daneAPIService.validateLocation("Department2", "Municipality3");
+        boolean isValid2 = daneApiService.validateLocation("Department2", "Municipality3");
         assertTrue(isValid2);
     }
 
     @Test
     void testValidateLocation_InvalidDepartment() {
-        // Arrange: mock the DANE API response
+        // Arrange: mock the DANE Api response
         DepartmentMunicipality[] mockResponse = new DepartmentMunicipality[]{
                 new DepartmentMunicipality("Region1", 1, "Department1", 101, "Municipality1"),
                 new DepartmentMunicipality("Region1", 1, "Department1", 102, "Municipality2")
@@ -96,7 +96,7 @@ class DaneAPIServiceTest {
         when(restTemplate.getForObject(anyString(), eq(DepartmentMunicipality[].class))).thenReturn(mockResponse);
 
         // Act: Call the service method with an invalid department
-        boolean isValid = daneAPIService.validateLocation("InvalidDepartment", "Municipality1");
+        boolean isValid = daneApiService.validateLocation("InvalidDepartment", "Municipality1");
 
         assertFalse(isValid);
     }
@@ -110,7 +110,7 @@ class DaneAPIServiceTest {
         when(restTemplate.getForObject(anyString(), eq(DepartmentMunicipality[].class))).thenReturn(mockResponse);
 
         // Act: Call the service method with an invalid municipality
-        boolean isValid = daneAPIService.validateLocation("Department1", "InvalidMunicipality");
+        boolean isValid = daneApiService.validateLocation("Department1", "InvalidMunicipality");
 
         assertFalse(isValid);
     }

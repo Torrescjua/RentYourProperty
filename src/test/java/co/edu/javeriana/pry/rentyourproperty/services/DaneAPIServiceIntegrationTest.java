@@ -12,23 +12,23 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class DaneAPIServiceIntegrationTest {
+class DaneApiServiceIntegrationTest {
 
     @Autowired
-    private DaneAPIService daneAPIService;
+    private DaneApiService daneApiService;
 
     @Autowired
     private RestTemplate restTemplate;
 
     @BeforeEach
     void setUp() {
-        daneAPIService = new DaneAPIService(restTemplate);
+        daneApiService = new DaneApiService(restTemplate);
     }
 
     @Test
-    void testGetDepartmentsAndMunicipalities_RealAPI() {
-        // Act: Call the real API to fetch departments and municipalities
-        Map<String, List<String>> result = daneAPIService.getDepartmentsAndMunicipalities();
+    void testGetDepartmentsAndMunicipalities_RealApi() {
+        // Act: Call the real Api to fetch departments and municipalities
+        Map<String, List<String>> result = daneApiService.getDepartmentsAndMunicipalities();
         
         // Assert: Check that well-known departments and municipalities are in the data
         assertNotNull(result);
@@ -40,17 +40,17 @@ class DaneAPIServiceIntegrationTest {
     }
 
     @Test
-    void testValidateLocation_RealAPI_ValidLocation() {
+    void testValidateLocation_RealApi_ValidLocation() {
         // Act: Validate a known valid department/municipality pair
-        boolean isValid = daneAPIService.validateLocation("Atlántico", "Barranquilla");
+        boolean isValid = daneApiService.validateLocation("Atlántico", "Barranquilla");
 
         assertTrue(isValid);
     }
 
     @Test
-    void testValidateLocation_RealAPI_InvalidLocation() {
+    void testValidateLocation_RealApi_InvalidLocation() {
         // Act: Validate an invalid department/municipality pair
-        boolean isValid = daneAPIService.validateLocation("Atlantis", "NonexistentCity");
+        boolean isValid = daneApiService.validateLocation("Atlantis", "NonexistentCity");
 
         assertFalse(isValid);
     }

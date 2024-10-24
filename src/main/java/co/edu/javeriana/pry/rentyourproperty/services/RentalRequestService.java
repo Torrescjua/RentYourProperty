@@ -85,15 +85,21 @@ public class RentalRequestService {
     
     public List<RentalRequestDTO> getRentalRequestsByUserId(Long userId) {
         List<RentalRequest> rentalRequests = rentalRequestRepository.findByUserId(userId);
-
         if (rentalRequests.isEmpty()) {
             throw new ResourceNotFoundException("No rental requests found for user ID: " + userId);
         }
-
+    
         return rentalRequests.stream()
-                             .map(rentalRequest -> modelMapper.map(rentalRequest, RentalRequestDTO.class))
-                             .toList();
+            .map(rentalRequest -> {
+                RentalRequestDTO dto = modelMapper.map(rentalRequest, RentalRequestDTO.class);
+                dto.setPropertyId(rentalRequest.getProperty() != null ? rentalRequest.getProperty().getId() : null);
+                dto.setUserId(rentalRequest.getUser() != null ? rentalRequest.getUser().getId() : null);
+                dto.setPaymentId(rentalRequest.getPayment() != null ? rentalRequest.getPayment().getId() : null);
+                return dto;
+            })
+            .toList();
     }
+    
 
     public RentalRequestDTO acceptOrRejectRequest(Long requestId, boolean isAccepted, Long currentUserId) {
         RentalRequest rentalRequest = rentalRequestRepository.findById(requestId)

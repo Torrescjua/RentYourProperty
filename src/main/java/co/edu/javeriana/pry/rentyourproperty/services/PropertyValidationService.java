@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class PropertyValidationService {
 
-    private final DaneAPIService daneAPIService;
+    private final DaneApiService daneApiService;
 
-    public PropertyValidationService(DaneAPIService daneAPIService) {
-        this.daneAPIService = daneAPIService;
+    public PropertyValidationService(DaneApiService daneApiService) {
+        this.daneApiService = daneApiService;
     }
 
     /**
@@ -20,7 +20,7 @@ public class PropertyValidationService {
      */
     public boolean validateLocation(String department, String municipality) {
         
-        return daneAPIService.validateLocation(department, municipality);
+        return daneApiService.validateLocation(department, municipality);
     }
 }
 
