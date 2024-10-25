@@ -40,10 +40,7 @@ public class RentalRequestService {
         this.modelMapper = modelMapper;
     }
 
-    public RentalRequestDTO createRentalRequest(RentalRequestDTO rentalRequestDTO) {
-        Long userId = rentalRequestDTO.getUserId();
-        Long propertyId = rentalRequestDTO.getPropertyId();
-        
+    public RentalRequestDTO createRentalRequest(Long userId, Long propertyId) {
         // Check if the user is a landlord
         if (userService.isUserLandlord(userId)) {
             throw new UnauthorizedException("Users with the ARRENDADOR role cannot make rental requests.");
@@ -60,19 +57,23 @@ public class RentalRequestService {
         }
         
         // Create the RentalRequest entity
-        RentalRequest rentalRequest = modelMapper.map(rentalRequestDTO, RentalRequest.class);
-        rentalRequest.setRequestDate(LocalDate.parse(rentalRequestDTO.getRequestDate()));
-        rentalRequest.setResponseDate(rentalRequestDTO.getResponseDate() != null
-                ? LocalDate.parse(rentalRequestDTO.getResponseDate())
-                : null);
-        rentalRequest.setRequestStatus(RequestStatus.PENDING); // Set initial status
+        RentalRequest rentalRequest = new RentalRequest();
+        
+        // Set the current date and time for requestDate
+        rentalRequest.setRequestDate(LocalDate.now());  // Set current date
+        
+        // Set responseDate to null
+        rentalRequest.setResponseDate(null);
+        
+        // Set the initial request status
+        rentalRequest.setRequestStatus(RequestStatus.PENDING);
         
         // Fetch the User and Property entities to set in RentalRequest
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found."));
-      
+        
         rentalRequest.setUser(user);
         rentalRequest.setProperty(property);
         

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,9 +27,11 @@ public class RentalRequestController {
 
     // Create a new rental request
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RentalRequestDTO createRentalRequest(@RequestBody RentalRequestDTO rentalRequestDTO) {
-        return rentalRequestService.createRentalRequest(rentalRequestDTO);
-    }
+    public RentalRequestDTO createRentalRequest(
+        @RequestParam Long userId,
+        @RequestParam Long propertyId) {
+    return rentalRequestService.createRentalRequest(userId, propertyId);
+    }       
     // Get rental requests by user ID
     @GetMapping(value = "/get/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<RentalRequestDTO> getRentalRequestsByUserId(@PathVariable Long userId) {
