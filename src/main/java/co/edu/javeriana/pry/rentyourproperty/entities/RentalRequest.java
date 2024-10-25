@@ -42,7 +42,10 @@ public class RentalRequest {
     @NotNull(message = "RequestStatus is required")
     private RequestStatus requestStatus;
 
+    private LocalDate arrivalDate; 
+    private LocalDate departureDate; 
+    private Double value; 
+
     @OneToOne(mappedBy = "rentalRequest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
-
 }

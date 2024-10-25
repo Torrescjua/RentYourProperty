@@ -11,4 +11,7 @@ public class RentalRequestDTO {
     private String requestDate;
     private String responseDate;
     private String requestStatus;
+    private String arrivalDate; 
+    private String departureDate; 
+    private Double value;
 }
