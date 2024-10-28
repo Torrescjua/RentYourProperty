@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -59,41 +58,42 @@ class RentalRequestServiceTest {
     @Test
     void testCreateRentalRequest_Success() {
         // Arrange
-        RentalRequestDTO rentalRequestDTO = new RentalRequestDTO();
-        rentalRequestDTO.setUserId(1L);
-        rentalRequestDTO.setPropertyId(1L);
-        rentalRequestDTO.setRequestDate(LocalDate.now().toString());
-
+        Long userId = 1L;
+        Long propertyId = 1L;
+    
         User user = new User();
         Property property = new Property();
         RentalRequest rentalRequest = new RentalRequest();
-
-        when(userService.isUserLandlord(1L)).thenReturn(false);
-        when(userService.isUserActive(1L)).thenReturn(true);
-        when(propertyService.doesPropertyExist(1L)).thenReturn(true);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(propertyRepository.findById(1L)).thenReturn(Optional.of(property));
-        when(modelMapper.map(rentalRequestDTO, RentalRequest.class)).thenReturn(rentalRequest);
-        when(rentalRequestRepository.save(rentalRequest)).thenReturn(rentalRequest);
+        RentalRequestDTO rentalRequestDTO = new RentalRequestDTO();
+    
+        when(userService.isUserLandlord(userId)).thenReturn(false);
+        when(userService.isUserActive(userId)).thenReturn(true);
+        when(propertyService.doesPropertyExist(propertyId)).thenReturn(true);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(property));
+        when(rentalRequestRepository.save(any(RentalRequest.class))).thenReturn(rentalRequest);
         when(modelMapper.map(rentalRequest, RentalRequestDTO.class)).thenReturn(rentalRequestDTO);
-
+    
         // Act
-        RentalRequestDTO result = rentalRequestService.createRentalRequest(rentalRequestDTO);
-
+        RentalRequestDTO result = rentalRequestService.createRentalRequest(userId, propertyId);
+    
         // Assert
         assertNotNull(result);
-        verify(rentalRequestRepository, times(1)).save(rentalRequest);
+        verify(rentalRequestRepository, times(1)).save(any(RentalRequest.class));
     }
-
+    
     @Test
     void testCreateRentalRequest_FailsWhenUserIsLandlord() {
-        RentalRequestDTO rentalRequestDTO = new RentalRequestDTO();
-        rentalRequestDTO.setUserId(1L);
-
-        when(userService.isUserLandlord(1L)).thenReturn(true);
-
-        assertThrows(UnauthorizedException.class, () -> rentalRequestService.createRentalRequest(rentalRequestDTO));
+        // Arrange
+        Long userId = 1L;
+        Long propertyId = 1L;
+    
+        when(userService.isUserLandlord(userId)).thenReturn(true);
+    
+        // Act & Assert
+        assertThrows(UnauthorizedException.class, () -> rentalRequestService.createRentalRequest(userId, propertyId));
     }
+    
 
     @Test
     void testGetRentalRequestsByUserId_Success() {
