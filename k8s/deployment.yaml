@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rent-your-property-backend
+  namespace: backend
+spec:
+  selector:
+    matchLabels:
+      app: rent-your-property-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rent-your-property-backend
+    spec:
+      imagePullSecrets:
+        - name: github-secret
+      containers:
+        - name: rent-your-property-backend
+          image: <nombre de la imagen>
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rent-your-property-service
+  namespace: backend
+spec:
+  selector:
+    app: rent-your-property-backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

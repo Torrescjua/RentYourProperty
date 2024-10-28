@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rent-your-property-ingress
+  namespace: backend
+spec:
+  ingressClassName: public
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /api/
+            pathType: Prefix
+            backend:
+              service:
+                name: rent-your-property-service
+                port:
+                  number: 8080
