@@ -6,4 +6,4 @@ WORKDIR /app
 
 RUN ./mvnw clean install -DskipTests
 
-CMD ["java", "-jar", "target/rentyourproperty-0.0.1-SNAPSHOTjar"]
+CMD ["java", "-jar", "target/rentyourproperty-0.0.1-SNAPSHOT.jar"]
