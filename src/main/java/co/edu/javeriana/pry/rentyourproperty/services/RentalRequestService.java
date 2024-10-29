@@ -50,49 +50,57 @@ public class RentalRequestService {
         if (!userService.isUserActive(userId)) {
             throw new ResourceNotFoundException("User is not active.");
         }
-        
+    
         // Check if the property exists and is valid
         if (!propertyService.doesPropertyExist(propertyId)) {
             throw new ResourceNotFoundException("Property not found.");
         }
-        
+    
         // Create the RentalRequest entity
         RentalRequest rentalRequest = new RentalRequest();
         
         // Set the current date and time for requestDate
-        rentalRequest.setRequestDate(LocalDate.now());  // Set current date
-        
-        // Set responseDate to null
+        rentalRequest.setRequestDate(LocalDate.now());
         rentalRequest.setResponseDate(null);
-        
-        // Set the initial request status
         rentalRequest.setRequestStatus(RequestStatus.PENDING);
-        
-        // Fetch the User and Property entities to set in RentalRequest
+    
+        // Fetch User and Property entities to set in RentalRequest
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found."));
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found."));
-        
+    
         rentalRequest.setUser(user);
         rentalRequest.setProperty(property);
-        
+    
         // Save the rental request in the repository
         rentalRequest = rentalRequestRepository.save(rentalRequest);
         
-        // Return the RentalRequestDTO
         return modelMapper.map(rentalRequest, RentalRequestDTO.class);
     }
     
     public List<RentalRequestDTO> getRentalRequestsByUserId(Long userId) {
-        List<RentalRequest> rentalRequests = rentalRequestRepository.findByUserId(userId);
-        if (rentalRequests.isEmpty()) {
-            throw new ResourceNotFoundException("No rental requests found for user ID: " + userId);
+        List<RentalRequest> rentalRequests;
+    
+        if (userService.isUserLandlord(userId)) {
+            // If the user is a landlord, fetch requests for properties they own
+            rentalRequests = rentalRequestRepository.findByProperty_Landlord_Id(userId);
+            if (rentalRequests.isEmpty()) {
+                throw new ResourceNotFoundException("No rental requests found for landlord ID: " + userId);
+            }
+        } else {
+            // If the user is a tenant, fetch their own requests
+            rentalRequests = rentalRequestRepository.findByUserId(userId);
+            if (rentalRequests.isEmpty()) {
+                throw new ResourceNotFoundException("No rental requests found for user ID: " + userId);
+            }
         }
     
+        // Map rental requests to DTOs
         return rentalRequests.stream()
             .map(rentalRequest -> {
                 RentalRequestDTO dto = modelMapper.map(rentalRequest, RentalRequestDTO.class);
+                // Set additional fields for the DTO
                 dto.setPropertyId(rentalRequest.getProperty() != null ? rentalRequest.getProperty().getId() : null);
                 dto.setUserId(rentalRequest.getUser() != null ? rentalRequest.getUser().getId() : null);
                 dto.setPaymentId(rentalRequest.getPayment() != null ? rentalRequest.getPayment().getId() : null);
@@ -100,32 +108,34 @@ public class RentalRequestService {
             })
             .toList();
     }
-    
-
     public RentalRequestDTO acceptOrRejectRequest(Long requestId, boolean isAccepted, Long currentUserId) {
+        // Retrieve the rental request
         RentalRequest rentalRequest = rentalRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Rental request not found"));
-
-        // Check if the current user has the permission to update this request
-        if (!hasPermissionToUpdate(rentalRequest, currentUserId)) {
+                .orElseThrow(() -> new ResourceNotFoundException("Rental request not found."));
+    
+        // Check if the current user is a landlord
+        if (!userService.isUserLandlord(currentUserId)) {
             throw new UnauthorizedException("User is not authorized to accept or reject this rental request");
         }
+    
         // Update the request status
         rentalRequest.setRequestStatus(isAccepted ? RequestStatus.ACCEPTED : RequestStatus.REJECTED);
         rentalRequest = rentalRequestRepository.save(rentalRequest);
-
+    
+        // Return the updated rental request as a DTO
         return modelMapper.map(rentalRequest, RentalRequestDTO.class);
     }
-
-    private boolean hasPermissionToUpdate(RentalRequest rentalRequest, Long currentUserId) {
-        // Check if the current user is the one who made the request
-        boolean isRequester = rentalRequest.getUser().getId().equals(currentUserId);
-
-        // Check if the current user is a tenant (ARRENDATARIO)
-        boolean isLandlord = !userService.isUserLandlord(currentUserId);
-
-        // Return true if the user is either the requester or a tenant
-        return isRequester && isLandlord;
+    
+    public List<RentalRequestDTO> findRequestsByLandlordId(Long landlordId) {
+        List<RentalRequest> rentalRequests = rentalRequestRepository.findByProperty_Landlord_Id(landlordId);
+        if (rentalRequests.isEmpty()) {
+            throw new ResourceNotFoundException("No rental requests found for landlord ID: " + landlordId);
+        }
+    
+        return rentalRequests.stream()
+            .map(rentalRequest -> modelMapper.map(rentalRequest, RentalRequestDTO.class))
+            .toList();
     }
-
+    
+    
 }

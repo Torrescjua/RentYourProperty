@@ -54,18 +54,17 @@ class RentalRequestServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
     @Test
     void testCreateRentalRequest_Success() {
         // Arrange
         Long userId = 1L;
         Long propertyId = 1L;
-    
+
         User user = new User();
         Property property = new Property();
         RentalRequest rentalRequest = new RentalRequest();
         RentalRequestDTO rentalRequestDTO = new RentalRequestDTO();
-    
+
         when(userService.isUserLandlord(userId)).thenReturn(false);
         when(userService.isUserActive(userId)).thenReturn(true);
         when(propertyService.doesPropertyExist(propertyId)).thenReturn(true);
@@ -73,51 +72,54 @@ class RentalRequestServiceTest {
         when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(property));
         when(rentalRequestRepository.save(any(RentalRequest.class))).thenReturn(rentalRequest);
         when(modelMapper.map(rentalRequest, RentalRequestDTO.class)).thenReturn(rentalRequestDTO);
-    
+
         // Act
         RentalRequestDTO result = rentalRequestService.createRentalRequest(userId, propertyId);
-    
+
         // Assert
         assertNotNull(result);
         verify(rentalRequestRepository, times(1)).save(any(RentalRequest.class));
     }
-    
+
     @Test
     void testCreateRentalRequest_FailsWhenUserIsLandlord() {
         // Arrange
         Long userId = 1L;
         Long propertyId = 1L;
-    
+
         when(userService.isUserLandlord(userId)).thenReturn(true);
-    
+
         // Act & Assert
         assertThrows(UnauthorizedException.class, () -> rentalRequestService.createRentalRequest(userId, propertyId));
     }
-    
-    
 
     @Test
     void testGetRentalRequestsByUserId_Success() {
+        // Arrange
         List<RentalRequest> rentalRequests = Arrays.asList(new RentalRequest());
-
         when(rentalRequestRepository.findByUserId(1L)).thenReturn(rentalRequests);
         when(modelMapper.map(any(RentalRequest.class), eq(RentalRequestDTO.class))).thenReturn(new RentalRequestDTO());
 
+        // Act
         List<RentalRequestDTO> result = rentalRequestService.getRentalRequestsByUserId(1L);
 
+        // Assert
         assertFalse(result.isEmpty());
         verify(rentalRequestRepository, times(1)).findByUserId(1L);
     }
 
     @Test
     void testGetRentalRequestsByUserId_ThrowsExceptionWhenEmpty() {
+        // Arrange
         when(rentalRequestRepository.findByUserId(1L)).thenReturn(List.of());
 
+        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> rentalRequestService.getRentalRequestsByUserId(1L));
     }
 
     @Test
     void testAcceptOrRejectRequest_AcceptRequest() {
+        // Arrange
         RentalRequest rentalRequest = new RentalRequest();
         rentalRequest.setUser(new User());
         rentalRequest.getUser().setId(1L);
@@ -128,8 +130,10 @@ class RentalRequestServiceTest {
         when(rentalRequestRepository.save(rentalRequest)).thenReturn(rentalRequest);
         when(modelMapper.map(rentalRequest, RentalRequestDTO.class)).thenReturn(new RentalRequestDTO());
 
+        // Act
         RentalRequestDTO result = rentalRequestService.acceptOrRejectRequest(1L, true, 1L);
 
+        // Assert
         assertNotNull(result);
         assertEquals(RequestStatus.ACCEPTED, rentalRequest.getRequestStatus());
         verify(rentalRequestRepository, times(1)).save(rentalRequest);
@@ -137,18 +141,21 @@ class RentalRequestServiceTest {
 
     @Test
     void testAcceptOrRejectRequest_RejectRequest() {
+        // Arrange
         RentalRequest rentalRequest = new RentalRequest();
         rentalRequest.setUser(new User());
         rentalRequest.getUser().setId(1L);
         rentalRequest.setRequestStatus(RequestStatus.PENDING);
 
         when(rentalRequestRepository.findById(1L)).thenReturn(Optional.of(rentalRequest));
-        when(userService.isUserLandlord(1L)).thenReturn(false);
+        when(userService.isUserLandlord(1L)).thenReturn(false); // Current user is not a landlord
         when(rentalRequestRepository.save(rentalRequest)).thenReturn(rentalRequest);
         when(modelMapper.map(rentalRequest, RentalRequestDTO.class)).thenReturn(new RentalRequestDTO());
 
+        // Act
         RentalRequestDTO result = rentalRequestService.acceptOrRejectRequest(1L, false, 1L);
 
+        // Assert
         assertNotNull(result);
         assertEquals(RequestStatus.REJECTED, rentalRequest.getRequestStatus());
         verify(rentalRequestRepository, times(1)).save(rentalRequest);
@@ -156,6 +163,7 @@ class RentalRequestServiceTest {
 
     @Test
     void testAcceptOrRejectRequest_ThrowsUnauthorizedExceptionForLandlord() {
+        // Arrange
         RentalRequest rentalRequest = new RentalRequest();
         rentalRequest.setUser(new User());
         rentalRequest.getUser().setId(1L);
@@ -163,6 +171,7 @@ class RentalRequestServiceTest {
         when(rentalRequestRepository.findById(1L)).thenReturn(Optional.of(rentalRequest));
         when(userService.isUserLandlord(1L)).thenReturn(true); // Current user is a landlord
 
+        // Act & Assert
         assertThrows(UnauthorizedException.class, () -> rentalRequestService.acceptOrRejectRequest(1L, true, 1L));
     }
 
@@ -173,16 +182,15 @@ class RentalRequestServiceTest {
         User requester = new User();
         requester.setId(2L); // Different user ID than the current user
         rentalRequest.setUser(requester); // The user who made the request is different from the current user
-        
+
         // Simulate the current user is not a landlord (e.g., a tenant)
-        when(userService.isUserLandlord(1L)).thenReturn(false); 
+        when(userService.isUserLandlord(1L)).thenReturn(false);
         
         // The rental request belongs to another user, so the current user is not authorized
         when(rentalRequestRepository.findById(1L)).thenReturn(Optional.of(rentalRequest));
-        
+
         // Act & Assert
         assertThrows(UnauthorizedException.class, () -> rentalRequestService.acceptOrRejectRequest(1L, true, 1L));
     }
-
 
 }
