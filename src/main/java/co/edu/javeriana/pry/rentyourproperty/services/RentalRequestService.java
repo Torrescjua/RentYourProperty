@@ -43,7 +43,7 @@ public class RentalRequestService {
     public RentalRequestDTO createRentalRequest(Long userId, Long propertyId) {
         // Check if the user is a landlord
         if (userService.isUserLandlord(userId)) {
-            throw new UnauthorizedException("Users with the ARRENDATARIO role cannot make rental requests.");
+            throw new UnauthorizedException("Users with the ARRENDADOR role cannot make rental requests.");
         }
     
         // Check if the user is active
@@ -119,7 +119,7 @@ public class RentalRequestService {
         RentalRequest rentalRequest = rentalRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental request not found."));
     
-        // Check if the current user is a landlord
+        // Check if the current user is a tenant
         if (!userService.isUserLandlord(currentUserId)) {
             throw new UnauthorizedException("User is not authorized to accept or reject this rental request");
         }
