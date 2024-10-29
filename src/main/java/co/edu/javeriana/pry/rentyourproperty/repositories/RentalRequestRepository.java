@@ -9,5 +9,5 @@ import co.edu.javeriana.pry.rentyourproperty.entities.RentalRequest;
 @Repository
 public interface RentalRequestRepository extends JpaRepository<RentalRequest, Long>{
     List<RentalRequest> findByUserId(Long userId);
-    List<RentalRequest> findByProperty_Landlord_Id(Long landlordId);
+    List<RentalRequest> findByProperty_Owner_Id(Long ownerId);
 }

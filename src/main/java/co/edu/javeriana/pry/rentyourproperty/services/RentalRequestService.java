@@ -43,7 +43,7 @@ public class RentalRequestService {
     public RentalRequestDTO createRentalRequest(Long userId, Long propertyId) {
         // Check if the user is a landlord
         if (userService.isUserLandlord(userId)) {
-            throw new UnauthorizedException("Users with the ARRENDADOR role cannot make rental requests.");
+            throw new UnauthorizedException("Users with the ARRENDATARIO role cannot make rental requests.");
         }
     
         // Check if the user is active
@@ -82,16 +82,20 @@ public class RentalRequestService {
     public List<RentalRequestDTO> getRentalRequestsByUserId(Long userId) {
         List<RentalRequest> rentalRequests;
     
+        System.out.println("Fetching rental requests for user ID: " + userId);
+    
         if (userService.isUserLandlord(userId)) {
-            // If the user is a landlord, fetch requests for properties they own
-            rentalRequests = rentalRequestRepository.findByProperty_Landlord_Id(userId);
+            System.out.println("User ID " + userId + " is a landlord. Fetching requests for properties owned.");
+            rentalRequests = rentalRequestRepository.findByProperty_Owner_Id(userId);
             if (rentalRequests.isEmpty()) {
+                System.out.println("No rental requests found for landlord ID: " + userId);
                 throw new ResourceNotFoundException("No rental requests found for landlord ID: " + userId);
             }
         } else {
-            // If the user is a tenant, fetch their own requests
+            System.out.println("User ID " + userId + " is a tenant. Fetching their own requests.");
             rentalRequests = rentalRequestRepository.findByUserId(userId);
             if (rentalRequests.isEmpty()) {
+                System.out.println("No rental requests found for user ID: " + userId);
                 throw new ResourceNotFoundException("No rental requests found for user ID: " + userId);
             }
         }
@@ -108,6 +112,8 @@ public class RentalRequestService {
             })
             .toList();
     }
+    
+   
     public RentalRequestDTO acceptOrRejectRequest(Long requestId, boolean isAccepted, Long currentUserId) {
         // Retrieve the rental request
         RentalRequest rentalRequest = rentalRequestRepository.findById(requestId)
@@ -125,17 +131,5 @@ public class RentalRequestService {
         // Return the updated rental request as a DTO
         return modelMapper.map(rentalRequest, RentalRequestDTO.class);
     }
-    
-    public List<RentalRequestDTO> findRequestsByLandlordId(Long landlordId) {
-        List<RentalRequest> rentalRequests = rentalRequestRepository.findByProperty_Landlord_Id(landlordId);
-        if (rentalRequests.isEmpty()) {
-            throw new ResourceNotFoundException("No rental requests found for landlord ID: " + landlordId);
-        }
-    
-        return rentalRequests.stream()
-            .map(rentalRequest -> modelMapper.map(rentalRequest, RentalRequestDTO.class))
-            .toList();
-    }
-    
     
 }

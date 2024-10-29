@@ -91,7 +91,7 @@ public class PropertyService {
     // POST method to create a new property
     public PropertyDTO createProperty(PropertyDTO propertyDTO, Long ownerId) {
         if (!userService.isUserLandlord(ownerId)) {
-            throw new UnauthorizedException("Only users with the ARRENDADOR role can be property owners.");
+            throw new UnauthorizedException("Only users with the ARRENDATARIO role can be property owners.");
         }
         Property property = modelMapper.map(propertyDTO, Property.class);
 
