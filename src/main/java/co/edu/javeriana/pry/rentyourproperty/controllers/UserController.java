@@ -85,7 +85,10 @@ public class UserController {
     }
    }
 
-
-
+   @GetMapping("/{userId}/is-landlord")
+   public boolean isUserLandlord(@PathVariable Long userId) {
+       return userService.isUserLandlord(userId);
+   }
+   
 }
 
