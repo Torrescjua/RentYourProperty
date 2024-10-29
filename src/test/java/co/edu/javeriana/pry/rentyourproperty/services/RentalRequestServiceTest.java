@@ -75,8 +75,8 @@ class RentalRequestServiceTest {
         when(modelMapper.map(rentalRequest, RentalRequestDTO.class)).thenReturn(rentalRequestDTO);
     
         // Act
-        RentalRequestDTO result = (RentalRequestDTO) rentalRequestService.createRentalRequest(rentalRequestDTO);
-
+        RentalRequestDTO result = rentalRequestService.createRentalRequest(userId, propertyId);
+    
         // Assert
         assertNotNull(result);
         verify(rentalRequestRepository, times(1)).save(any(RentalRequest.class));
@@ -93,6 +93,7 @@ class RentalRequestServiceTest {
         // Act & Assert
         assertThrows(UnauthorizedException.class, () -> rentalRequestService.createRentalRequest(userId, propertyId));
     }
+    
     
 
     @Test
