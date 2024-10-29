@@ -128,4 +128,9 @@ public class RentalRequestService {
         return isRequester && isLandlord;
     }
 
+    public Object createRentalRequest(RentalRequestDTO rentalRequestDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createRentalRequest'");
+    }
+
 }

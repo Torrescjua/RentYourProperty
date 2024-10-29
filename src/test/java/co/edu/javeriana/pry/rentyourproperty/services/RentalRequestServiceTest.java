@@ -78,7 +78,7 @@ class RentalRequestServiceTest {
         when(modelMapper.map(rentalRequest, RentalRequestDTO.class)).thenReturn(rentalRequestDTO);
 
         // Act
-        RentalRequestDTO result = rentalRequestService.createRentalRequest(rentalRequestDTO);
+        RentalRequestDTO result = (RentalRequestDTO) rentalRequestService.createRentalRequest(rentalRequestDTO);
 
         // Assert
         assertNotNull(result);
