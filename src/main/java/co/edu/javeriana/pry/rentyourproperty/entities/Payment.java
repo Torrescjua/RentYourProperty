@@ -26,6 +26,6 @@ public class Payment {
 
 
     @OneToOne
-    @JoinColumn(name = "rental_request_id")
+    @JoinColumn(name = "rental_request_id", nullable = false) 
     private RentalRequest rentalRequest;
 }

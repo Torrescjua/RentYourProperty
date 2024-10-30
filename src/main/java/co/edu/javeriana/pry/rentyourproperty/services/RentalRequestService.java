@@ -40,6 +40,13 @@ public class RentalRequestService {
         this.modelMapper = modelMapper;
     }
 
+    public void updateRentalRequestStatus(Long rentalRequestId, RequestStatus status) {
+        RentalRequest rentalRequest = rentalRequestRepository.findById(rentalRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rental Request not found"));
+        rentalRequest.setRequestStatus(status); 
+        rentalRequestRepository.save(rentalRequest);
+    }
+
     public RentalRequestDTO createRentalRequest(Long userId, Long propertyId) {
         // Check if the user is a landlord
         if (userService.isUserLandlord(userId)) {

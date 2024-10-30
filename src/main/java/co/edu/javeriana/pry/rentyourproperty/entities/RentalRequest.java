@@ -47,5 +47,5 @@ public class RentalRequest {
     private Double value; 
 
     @OneToOne(mappedBy = "rentalRequest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Payment payment;
+    private Payment payment;  
 }
