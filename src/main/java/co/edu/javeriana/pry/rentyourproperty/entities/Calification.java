@@ -2,13 +2,7 @@ package co.edu.javeriana.pry.rentyourproperty.entities;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -29,11 +23,15 @@ public class Calification {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user; // The user giving the rating
+
+    @ManyToOne
+    @JoinColumn(name = "target_user_id")
+    private User targetUser; // The user being rated (landlord or tenant)
 
     @ManyToOne
     @JoinColumn(name = "property_id")
-    private Property property;
+    private Property property; // Used only when rating a property
 
     @Min(1)
     @Max(5)
@@ -43,4 +41,7 @@ public class Calification {
 
     @NotNull
     private LocalDate date;
+
+    @Enumerated(EnumType.STRING)
+    private RatingType ratingType; // Enum for the type of rating (tenant-to-landlord, landlord-to-tenant, tenant-to-property)
 }
