@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import co.edu.javeriana.pry.rentyourproperty.dtos.UserDTO;
 import co.edu.javeriana.pry.rentyourproperty.services.UserService;
 import jakarta.validation.Valid;
@@ -39,10 +37,13 @@ public class UserController {
     }
 
     // Autenticarse como usuario existente
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO logIn(@RequestParam String email, @RequestParam String password) {
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO logIn(@RequestBody java.util.Map<String, String> loginData) {
+        String email = loginData.get("email");
+        String password = loginData.get("password");
         return userService.logIn(email, password);
     }
+
 
     // Obtener un usuario por ID (GET)
     @GetMapping(value = "/users/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

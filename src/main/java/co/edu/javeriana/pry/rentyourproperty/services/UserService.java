@@ -46,30 +46,34 @@ public class UserService {
         return modelMapper.map(user, UserDTO.class);
     }
 
-    // Método POST para crear un nuevo usuario
     public UserDTO saveNew(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
-        user.setStatus(Status.ACTIVE); // Inicialmente inactivo
+        user.setStatus(Status.INACTIVE); // Establece el estado inicial a INACTIVE
         user = userRepository.save(user);
-
+    
         // Enviar correo de activación
         accountActivationService.sendActivationEmail(user);
-        
+    
         return modelMapper.map(user, UserDTO.class);
     }
+    
 
-    // Método PUT para actualizar un usuario existente
     public UserDTO update(Long id, UserDTO userDTO) {
         User existingUser = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + id));
-        
+    
+        // Mapear solo los campos que se permiten actualizar
         modelMapper.map(userDTO, existingUser);
-        existingUser.setId(id);
+    
+        // Asegurar que los campos críticos no sean sobrescritos
         existingUser.setStatus(existingUser.getStatus());
-        
+        existingUser.setActivationToken(existingUser.getActivationToken());
+        existingUser.setTokenExpiration(existingUser.getTokenExpiration());
+    
         User updatedUser = userRepository.save(existingUser);
         return modelMapper.map(updatedUser, UserDTO.class);
     }
+    
 
     // Método DELETE para eliminar un usuario (eliminación lógica)
     public void delete(Long id) {
@@ -83,18 +87,20 @@ public class UserService {
     
     // Log in
     public UserDTO logIn(String email, String password) {
-        // Check if a user with the provided email exists
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
-
-        // Check if the provided password matches the stored password
+    
         if (!user.getPassword().equals(password)) {
             throw new IllegalStateException("Invalid email or password");
         }
-
-        // Map the User entity to a UserDTO and return it
+    
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new IllegalStateException("User account is not active.");
+        }
+    
         return modelMapper.map(user, UserDTO.class);
     }
+    
 
     // Check if user is ARRENDATARIO (landlord)
     public boolean isUserLandlord(Long userId) {

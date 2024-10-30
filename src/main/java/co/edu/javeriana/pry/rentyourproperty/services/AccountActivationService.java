@@ -39,16 +39,20 @@ public class AccountActivationService {
 
     public void activateUser(String token) {
         User user = userRepository.findByActivationToken(token)
-            .orElseThrow(() -> new ResourceNotFoundException("Token de activación no válido"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Token de activación no válido"));
+        
         if (user.getTokenExpiration().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("El token de activación ha expirado");
         }
-
+    
+        if (user.getStatus() != Status.INACTIVE) {
+            throw new IllegalStateException("La cuenta ya está activa o en un estado no activable.");
+        }
+    
         user.setStatus(Status.ACTIVE);
         user.setActivationToken(null);
         user.setTokenExpiration(null);
-
+    
         userRepository.save(user);
-    }
+    }    
 }

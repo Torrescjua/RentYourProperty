@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,12 +25,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@SuppressWarnings("deprecation")
 @Table(name = "User")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "status = 'Active'")
 @SQLDelete(sql = "UPDATE users SET status = 'Inactive' WHERE id=?")
 public class User {
 
