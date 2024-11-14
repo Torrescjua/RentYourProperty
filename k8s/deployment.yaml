@@ -17,7 +17,7 @@ spec:
         - name: github-secret
       containers:
         - name: rent-your-property-backend
-          image: localhost:5000/jenkins/jenkins  
+          image: localhost:5000/jenkins/jenkins:latest
           ports:
             - containerPort: 8080
 
