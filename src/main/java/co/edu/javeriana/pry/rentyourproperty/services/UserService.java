@@ -47,11 +47,14 @@ public class UserService {
     }
 
     public UserDTO saveNew(UserDTO userDTO) {
+        if (userDTO.getRole() == null || userDTO.getRole().isBlank()) {
+            throw new IllegalArgumentException("El campo 'role' es obligatorio.");
+        }
+    
         User user = modelMapper.map(userDTO, User.class);
         user.setStatus(Status.INACTIVE); // Establece el estado inicial a INACTIVE
         user = userRepository.save(user);
     
-        // Enviar correo de activación
         accountActivationService.sendActivationEmail(user);
     
         return modelMapper.map(user, UserDTO.class);

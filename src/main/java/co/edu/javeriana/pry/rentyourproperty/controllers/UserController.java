@@ -32,9 +32,11 @@ public class UserController {
     // Crear un nuevo usuario (POST)
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserDTO userDTO) {
+        System.out.println("Datos recibidos en el backend: " + userDTO);
         UserDTO savedUserDTO = userService.saveNew(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUserDTO);
     }
+    
 
     // Autenticarse como usuario existente
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
