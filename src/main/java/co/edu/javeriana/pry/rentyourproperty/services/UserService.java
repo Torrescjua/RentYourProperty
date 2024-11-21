@@ -105,10 +105,10 @@ public class UserService {
     }
     
 
-    // Check if user is ARRENDADOR (landlord)
+    // Check if user is ARRENDATARIO (landlord)
     public boolean isUserLandlord(Long userId) {
         return userRepository.findById(userId)
-            .map(user -> Role.ARRENDADOR.equals(user.getRole()))
+            .map(user -> Role.ARRENDATARIO.equals(user.getRole()))
             .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND + userId));
     }
    
